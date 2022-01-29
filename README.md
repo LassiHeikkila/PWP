@@ -1,5 +1,8 @@
+# `taskey`
+[![CodeQL](https://github.com/LassiHeikkila/taskey/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/LassiHeikkila/taskey/actions/workflows/codeql-analysis.yml)
+
 # PWP SPRING 2022
-# PROJECT NAME
+# Project name: `taskey`
 # Group information
 * Student 1. Lassi Heikkila (Lassi.Heikkila@student.oulu.fi)
 
