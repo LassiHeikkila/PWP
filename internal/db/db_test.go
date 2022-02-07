@@ -89,4 +89,35 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	t.Run("test login account creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test machine creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test organization creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test schedule creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test task creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test user token creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test machine token creation", func(t *testing.T) {
+		t.Fail()
+	})
+
+	t.Run("test user creation", func(t *testing.T) {
+		t.Fail()
+	})
 }
