@@ -1,4 +1,5 @@
 # `taskey`
+[![Go](https://github.com/LassiHeikkila/taskey/actions/workflows/go.yml/badge.svg)](https://github.com/LassiHeikkila/taskey/actions/workflows/go.yml)
 [![CodeQL](https://github.com/LassiHeikkila/taskey/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/LassiHeikkila/taskey/actions/workflows/codeql-analysis.yml)
 
 # PWP SPRING 2022
