@@ -19,10 +19,43 @@ func OpenDB(opts ...Option) *gorm.DB {
 	return db
 }
 
+func InitializeDB(db *gorm.DB) error {
+	// essentially doing CREATE TABLE IF NOT EXISTS for each model, nothing more exotic than that
+
+	// remember to add new Models here when they're added
+	// do one by one to avoid a set of problems with models depending on each other
+	if err := db.AutoMigrate(&LoginInfo{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&Machine{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&Organization{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&Schedule{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&Task{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&MachineToken{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&UserToken{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&User{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var defaultDsn = dsn{
 	"host":     "localhost",
 	"user":     "postgres",
-    "dbname":   "postgres",
+	"dbname":   "postgres",
 	"port":     5432,
 	"sslmode":  "disable",
 	"TimeZone": "Etc/UTC",
@@ -39,7 +72,7 @@ func (dsn dsn) ApplyOptions(opts ...Option) {
 func (dsn dsn) String() string {
 	var r string
 	for k, v := range dsn {
-		r += fmt.Sprintf("%s='%v' ", k, v)
+		r += fmt.Sprintf("%s=%v ", k, v)
 	}
 
 	return r

@@ -6,6 +6,5 @@ import (
 
 type User struct {
 	gorm.Model
-	Name         string
-	Organization Organization
+	Name string
 }

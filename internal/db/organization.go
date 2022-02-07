@@ -6,6 +6,6 @@ import (
 
 type Organization struct {
 	gorm.Model
-	Users    []User
-	Machines []Machine
+	Users    []User    `gorm:"foreignKey:ID"`
+	Machines []Machine `gorm:"foreignKey:ID"`
 }

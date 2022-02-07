@@ -8,5 +8,5 @@ type LoginInfo struct {
 	gorm.Model
 	Username string
 	Password string
-	UserID   User
+	UserID   User `gorm:"foreignKey:ID"`
 }
