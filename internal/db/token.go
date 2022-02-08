@@ -10,13 +10,15 @@ import (
 type MachineToken struct {
 	gorm.Model
 	Value      pgtype.UUID
-	MachineID  Machine `gorm:"foreignKey:ID"`
 	Expiration time.Time
+	MachineID  uint
+	Machine    Machine
 }
 
 type UserToken struct {
 	gorm.Model
 	Value      pgtype.UUID
-	UserID     User `gorm:"foreignKey:ID"`
 	Expiration time.Time
+	UserID     uint
+	User       User
 }

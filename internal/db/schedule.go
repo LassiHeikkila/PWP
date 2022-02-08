@@ -7,6 +7,7 @@ import (
 
 type Schedule struct {
 	gorm.Model
-	Machine Machine `gorm:"foreignKey:ID"`
-	Content pgtype.JSON
+	Content   pgtype.JSON
+	MachineID int
+	Machine   Machine
 }

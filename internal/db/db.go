@@ -24,10 +24,19 @@ func InitializeDB(db *gorm.DB) error {
 
 	// remember to add new Models here when they're added
 	// do one by one to avoid a set of problems with models depending on each other
-	if err := db.AutoMigrate(&LoginInfo{}); err != nil {
+	if err := db.AutoMigrate(&User{}); err != nil {
 		return err
 	}
 	if err := db.AutoMigrate(&Machine{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&LoginInfo{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&MachineToken{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&UserToken{}); err != nil {
 		return err
 	}
 	if err := db.AutoMigrate(&Organization{}); err != nil {
@@ -37,15 +46,6 @@ func InitializeDB(db *gorm.DB) error {
 		return err
 	}
 	if err := db.AutoMigrate(&Task{}); err != nil {
-		return err
-	}
-	if err := db.AutoMigrate(&MachineToken{}); err != nil {
-		return err
-	}
-	if err := db.AutoMigrate(&UserToken{}); err != nil {
-		return err
-	}
-	if err := db.AutoMigrate(&User{}); err != nil {
 		return err
 	}
 

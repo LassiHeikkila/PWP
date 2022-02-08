@@ -3,6 +3,7 @@ module github.com/LassiHeikkila/taskey
 go 1.17
 
 require (
+	github.com/google/go-cmp v0.5.7
 	github.com/jackc/pgtype v1.9.1
 	github.com/testcontainers/testcontainers-go v0.12.0
 	gorm.io/driver/postgres v1.2.3
