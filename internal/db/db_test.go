@@ -105,7 +105,6 @@ func TestDBIntegration(t *testing.T) {
 	loginInfo := LoginInfo{
 		Username: "lassi",
 		Password: "changeme",
-		User:     user,
 	}
 	machine := Machine{
 		Name:        "Lassi's Raspberry Pi",
@@ -152,8 +151,10 @@ func TestDBIntegration(t *testing.T) {
 		if err := res.Error; err != nil {
 			t.Fatal("error creating User:", err)
 		}
+		t.Log("inserted user with id:", user.ID)
 	})
 	userToken.UserID = user.ID
+	loginInfo.UserID = user.ID
 
 	t.Run("test login account creation", func(t *testing.T) {
 		res := db.Create(&loginInfo)
@@ -167,8 +168,10 @@ func TestDBIntegration(t *testing.T) {
 		if err := res.Error; err != nil {
 			t.Fatal("error creating Machine:", err)
 		}
+		t.Log("inserted machine with id:", machine.ID)
 	})
 	machineToken.MachineID = machine.ID
+	schedule.MachineID = machine.ID
 
 	t.Run("test organization creation", func(t *testing.T) {
 		res := db.Create(&org)
@@ -207,7 +210,7 @@ func TestDBIntegration(t *testing.T) {
 
 	t.Run("test user read", func(t *testing.T) {
 		u := User{}
-		// just user First, we know there's only one
+		// just use First, we know there's only one
 		res := db.First(&u)
 		if err := res.Error; err != nil {
 			t.Fatal("non-nil error returned:", err)
@@ -216,4 +219,29 @@ func TestDBIntegration(t *testing.T) {
 			t.Fatal(cmp.Diff(user, u, timeCmp))
 		}
 	})
+
+	t.Run("test machine read", func(t *testing.T) {
+		m := Machine{}
+		// just use First, we know there's only one
+		res := db.First(&m)
+		if err := res.Error; err != nil {
+			t.Fatal("non-nil error returned:", err)
+		}
+		if !cmp.Equal(machine, m, timeCmp) {
+			t.Fatal(cmp.Diff(machine, m, timeCmp))
+		}
+	})
+
+	t.Run("test task read", func(t *testing.T) {
+		tsk := Task{}
+		// just use First, we know there's only one
+		res := db.First(&tsk)
+		if err := res.Error; err != nil {
+			t.Fatal("non-nil error returned:", err)
+		}
+		if !cmp.Equal(task, tsk, timeCmp) {
+			t.Fatal(cmp.Diff(task, tsk, timeCmp))
+		}
+	})
+
 }

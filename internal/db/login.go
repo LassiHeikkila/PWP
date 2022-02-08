@@ -6,8 +6,8 @@ import (
 
 type LoginInfo struct {
 	gorm.Model
-	Username string
-	Password string
-	UserID   int
+	Username string `gorm:"unique,not null"`
+	Password string `gorm:"not null"`
+	UserID   uint
 	User     User
 }

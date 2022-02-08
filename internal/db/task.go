@@ -7,7 +7,7 @@ import (
 
 type Task struct {
 	gorm.Model
-	Name        string
+	Name        string `gorm:"unique,not null"`
 	Description string
 	Content     pgtype.JSON
 }

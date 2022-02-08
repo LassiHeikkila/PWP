@@ -6,7 +6,7 @@ import (
 
 type Machine struct {
 	gorm.Model
-	Name           string
+	Name           string `gorm:"unique,not null"`
 	Description    string
 	OS             string
 	Arch           string
