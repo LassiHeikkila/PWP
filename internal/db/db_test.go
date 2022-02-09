@@ -101,7 +101,10 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
-	user := User{Name: "Lassi"}
+	user := User{
+		Name: "Lassi",
+		Role: int8(RoleRoot | RoleAdministrator),
+	}
 	loginInfo := LoginInfo{
 		Username: "lassi",
 		Password: "changeme",
@@ -113,8 +116,7 @@ func TestDBIntegration(t *testing.T) {
 		Arch:        "armv6l",
 	}
 	org := Organization{
-		Users:    []User{user},
-		Machines: []Machine{machine},
+		Name: "example-org",
 	}
 	sj := pgtype.JSON{}
 	sj.Set([]byte(`{"some":"json object"}`))
@@ -155,6 +157,7 @@ func TestDBIntegration(t *testing.T) {
 	})
 	userToken.UserID = user.ID
 	loginInfo.UserID = user.ID
+	org.Users = append(org.Users, user)
 
 	t.Run("test login account creation", func(t *testing.T) {
 		res := db.Create(&loginInfo)
@@ -172,6 +175,7 @@ func TestDBIntegration(t *testing.T) {
 	})
 	machineToken.MachineID = machine.ID
 	schedule.MachineID = machine.ID
+	org.Machines = append(org.Machines, machine)
 
 	t.Run("test organization creation", func(t *testing.T) {
 		res := db.Create(&org)
@@ -179,6 +183,9 @@ func TestDBIntegration(t *testing.T) {
 			t.Fatal("error creating Organization:", err)
 		}
 	})
+
+	user.OrganizationID = org.ID
+	machine.OrganizationID = org.ID
 
 	t.Run("test schedule creation", func(t *testing.T) {
 		res := db.Create(&schedule)
@@ -244,4 +251,16 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	t.Run("test organization read", func(t *testing.T) {
+		o := Organization{}
+		// just use First, we know there's only one
+		// also we want to populate the Users and Machines fields so need to preload them
+		res := db.Preload("Users").Preload("Machines").First(&o)
+		if err := res.Error; err != nil {
+			t.Fatal("non-nil error returned:", err)
+		}
+		if !cmp.Equal(org, o, timeCmp) {
+			t.Fatal(cmp.Diff(org, o, timeCmp))
+		}
+	})
 }
