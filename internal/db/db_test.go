@@ -13,15 +13,13 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func compareTimeWithMicroSecondEpsilon(a, b time.Time) bool {
-	delta := a.Sub(b)
-	if delta < 0 {
-		delta = -delta
-	}
-	return delta < time.Microsecond
+func compareTimeWithMilliSecondEpsilon(a, b time.Time) bool {
+	x := a.Round(time.Millisecond)
+	y := b.Round(time.Millisecond)
+	return x.Equal(y)
 }
 
-var timeCmp = cmp.Comparer(compareTimeWithMicroSecondEpsilon)
+var timeCmp = cmp.Comparer(compareTimeWithMilliSecondEpsilon)
 
 func TestDBIntegration(t *testing.T) {
 	now := time.Now().UTC()
@@ -101,6 +99,11 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	c := NewController(db)
+	if c == nil {
+		t.Fatal("failed to create db controller!")
+	}
+
 	user := User{
 		Name: "Lassi",
 		Role: int8(RoleRoot | RoleAdministrator),
@@ -149,118 +152,183 @@ func TestDBIntegration(t *testing.T) {
 	}
 
 	t.Run("test user creation", func(t *testing.T) {
-		res := db.Create(&user)
-		if err := res.Error; err != nil {
+		err := c.CreateUser(&user)
+		if err != nil {
 			t.Fatal("error creating User:", err)
 		}
-		t.Log("inserted user with id:", user.ID)
 	})
 	userToken.UserID = user.ID
 	loginInfo.UserID = user.ID
 	org.Users = append(org.Users, user)
 
 	t.Run("test login account creation", func(t *testing.T) {
-		res := db.Create(&loginInfo)
-		if err := res.Error; err != nil {
+		err := c.CreateLoginInfo(&loginInfo)
+		if err != nil {
 			t.Fatal("error creating LoginInfo:", err)
 		}
 	})
 
 	t.Run("test machine creation", func(t *testing.T) {
-		res := db.Create(&machine)
-		if err := res.Error; err != nil {
+		err := c.CreateMachine(&machine)
+		if err != nil {
 			t.Fatal("error creating Machine:", err)
 		}
-		t.Log("inserted machine with id:", machine.ID)
 	})
 	machineToken.MachineID = machine.ID
 	schedule.MachineID = machine.ID
 	org.Machines = append(org.Machines, machine)
 
 	t.Run("test organization creation", func(t *testing.T) {
-		res := db.Create(&org)
-		if err := res.Error; err != nil {
+		err := c.CreateOrganization(&org)
+		if err != nil {
 			t.Fatal("error creating Organization:", err)
 		}
 	})
 
 	user.OrganizationID = org.ID
 	machine.OrganizationID = org.ID
+	userToken.User = user
+	machineToken.Machine = machine
+	loginInfo.UserID = user.ID
+	loginInfo.User = user
 
 	t.Run("test schedule creation", func(t *testing.T) {
-		res := db.Create(&schedule)
-		if err := res.Error; err != nil {
+		err := c.CreateSchedule(&schedule)
+		if err != nil {
 			t.Fatal("error creating Schedule:", err)
 		}
 	})
 
 	t.Run("test task creation", func(t *testing.T) {
-		res := db.Create(&task)
-		if err := res.Error; err != nil {
+		err := c.CreateTask(&task)
+		if err != nil {
 			t.Fatal("error creating Task:", err)
 		}
 	})
 
 	t.Run("test user token creation", func(t *testing.T) {
-		res := db.Create(&userToken)
-		if err := res.Error; err != nil {
+		err := c.CreateUserToken(&userToken)
+		if err != nil {
 			t.Fatal("error creating UserToken:", err)
 		}
 	})
 
 	t.Run("test machine token creation", func(t *testing.T) {
-		res := db.Create(&machineToken)
-		if err := res.Error; err != nil {
+		err := c.CreateMachineToken(&machineToken)
+		if err != nil {
 			t.Fatal("error creating MachineToken:", err)
 		}
 	})
 
 	t.Run("test user read", func(t *testing.T) {
-		u := User{}
-		// just use First, we know there's only one
-		res := db.First(&u)
-		if err := res.Error; err != nil {
-			t.Fatal("non-nil error returned:", err)
+		name := user.Name
+		u, err := c.ReadUser(name)
+		if err != nil {
+			t.Fatal("error reading User:", err)
 		}
-		if !cmp.Equal(user, u, timeCmp) {
-			t.Fatal(cmp.Diff(user, u, timeCmp))
+		if u == nil {
+			t.Fatal("nil User returned")
+		}
+		if !cmp.Equal(user, *u, timeCmp) {
+			t.Fatal(cmp.Diff(user, *u, timeCmp))
 		}
 	})
 
 	t.Run("test machine read", func(t *testing.T) {
-		m := Machine{}
-		// just use First, we know there's only one
-		res := db.First(&m)
-		if err := res.Error; err != nil {
-			t.Fatal("non-nil error returned:", err)
+		name := machine.Name
+		m, err := c.ReadMachine(name)
+		if err != nil {
+			t.Fatal("error reading Machine:", err)
 		}
-		if !cmp.Equal(machine, m, timeCmp) {
-			t.Fatal(cmp.Diff(machine, m, timeCmp))
+		if m == nil {
+			t.Fatal("nil Machine returned")
+		}
+		if !cmp.Equal(machine, *m, timeCmp) {
+			t.Fatal(cmp.Diff(machine, *m, timeCmp))
 		}
 	})
 
 	t.Run("test task read", func(t *testing.T) {
-		tsk := Task{}
-		// just use First, we know there's only one
-		res := db.First(&tsk)
-		if err := res.Error; err != nil {
-			t.Fatal("non-nil error returned:", err)
+		name := task.Name
+		tsk, err := c.ReadTask(name)
+		if err != nil {
+			t.Fatal("error reading Task:", err)
 		}
-		if !cmp.Equal(task, tsk, timeCmp) {
-			t.Fatal(cmp.Diff(task, tsk, timeCmp))
+		if tsk == nil {
+			t.Fatal("nil Task returned")
+		}
+		if !cmp.Equal(task, *tsk, timeCmp) {
+			t.Fatal(cmp.Diff(task, *tsk, timeCmp))
 		}
 	})
 
 	t.Run("test organization read", func(t *testing.T) {
-		o := Organization{}
-		// just use First, we know there's only one
-		// also we want to populate the Users and Machines fields so need to preload them
-		res := db.Preload("Users").Preload("Machines").First(&o)
-		if err := res.Error; err != nil {
-			t.Fatal("non-nil error returned:", err)
+		name := org.Name
+		o, err := c.ReadOrganization(name)
+		if err != nil {
+			t.Fatal("error reading Organization:", err)
 		}
-		if !cmp.Equal(org, o, timeCmp) {
-			t.Fatal(cmp.Diff(org, o, timeCmp))
+		if o == nil {
+			t.Fatal("nil Organization returned")
+		}
+		if !cmp.Equal(org, *o, timeCmp) {
+			t.Fatal(cmp.Diff(org, *o, timeCmp))
+		}
+	})
+
+	t.Run("test schedule read", func(t *testing.T) {
+		machineName := machine.Name
+		s, err := c.ReadSchedule(machineName)
+		if err != nil {
+			t.Fatal("error reading Schedule:", err)
+		}
+		if s == nil {
+			t.Fatal("nil Schedule returned")
+		}
+		if !cmp.Equal(schedule, *s, timeCmp) {
+			t.Fatal(cmp.Diff(schedule, *s, timeCmp))
+		}
+	})
+
+	t.Run("test user token read", func(t *testing.T) {
+		tok := userToken.Value
+		ut, err := c.ReadUserToken(tok)
+		if err != nil {
+			t.Fatal("error reading UserToken:", err)
+		}
+		if ut == nil {
+			t.Fatal("nil UserToken returned")
+		}
+		if !cmp.Equal(userToken, *ut, timeCmp) {
+			t.Fatal(cmp.Diff(userToken, *ut, timeCmp))
+		}
+	})
+
+	t.Run("test machine token read", func(t *testing.T) {
+		tok := machineToken.Value
+		mt, err := c.ReadMachineToken(tok)
+		if err != nil {
+			t.Fatal("error reading MachineToken:", err)
+		}
+		if mt == nil {
+			t.Fatal("nil MachineToken returned")
+		}
+		if !cmp.Equal(machineToken, *mt, timeCmp) {
+			t.Fatal(cmp.Diff(machineToken, *mt, timeCmp))
+		}
+	})
+
+	t.Run("test login info read", func(t *testing.T) {
+		u := loginInfo.Username
+		l, err := c.ReadLoginInfo(u)
+		if err != nil {
+			t.Fatal("error reading LoginInfo:", err)
+		}
+		if l == nil {
+			t.Fatal("nil LoginInfo returned")
+		}
+		if !cmp.Equal(loginInfo, *l, timeCmp) {
+			t.Fatal(cmp.Diff(loginInfo, *l, timeCmp))
 		}
 	})
 }
