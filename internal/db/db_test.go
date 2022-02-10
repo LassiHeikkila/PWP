@@ -331,4 +331,126 @@ func TestDBIntegration(t *testing.T) {
 			t.Fatal(cmp.Diff(loginInfo, *l, timeCmp))
 		}
 	})
+
+	t.Run("update user", func(t *testing.T) {
+		user.Name = "Lassi2"
+		err := c.UpdateUser(&user)
+		if err != nil {
+			t.Fatal("error updating User:", err)
+		}
+	})
+
+	t.Run("update machine", func(t *testing.T) {
+		machine.Name = "the-other-raspbi"
+		err := c.UpdateMachine(&machine)
+		if err != nil {
+			t.Fatal("error updating Machine:", err)
+		}
+	})
+
+	t.Run("update organization", func(t *testing.T) {
+		org.Name = "example-org2"
+		err := c.UpdateOrganization(&org)
+		if err != nil {
+			t.Fatal("error updating Organization:", err)
+		}
+	})
+
+	t.Run("update schedule", func(t *testing.T) {
+		sj := pgtype.JSON{}
+		sj.Set([]byte(`{"description":"schedule","schedule":{"task":"echo 1 > /dev/null"}}`))
+		schedule.Content = sj
+		err := c.UpdateSchedule(&schedule)
+		if err != nil {
+			t.Fatal("error updating Schedule:", err)
+		}
+	})
+
+	t.Run("update task", func(t *testing.T) {
+		task.Name = "shutoff"
+		err := c.UpdateTask(&task)
+		if err != nil {
+			t.Fatal("error updating Task:", err)
+		}
+	})
+
+	t.Run("update user token", func(t *testing.T) {
+		userToken.Expiration = time.Now().AddDate(1, 0, 0)
+		err := c.UpdateUserToken(&userToken)
+		if err != nil {
+			t.Fatal("error updating UserToken:", err)
+		}
+	})
+
+	t.Run("update machine token", func(t *testing.T) {
+		machineToken.Expiration = time.Now().AddDate(3, 0, 0)
+		err := c.UpdateMachineToken(&machineToken)
+		if err != nil {
+			t.Fatal("error updating MachineToken:", err)
+		}
+	})
+
+	t.Run("update login info", func(t *testing.T) {
+		loginInfo.Password = "p4ssw0rd"
+		err := c.UpdateLoginInfo(&loginInfo)
+		if err != nil {
+			t.Fatal("error updating LoginInfo:", err)
+		}
+	})
+
+	t.Run("delete user", func(t *testing.T) {
+		err := c.DeleteUser(user.Name)
+		if err != nil {
+			t.Fatal("error deleting User:", err)
+		}
+	})
+
+	t.Run("delete machine", func(t *testing.T) {
+		err := c.DeleteMachine(machine.Name)
+		if err != nil {
+			t.Fatal("error deleting Machine:", err)
+		}
+	})
+
+	t.Run("delete organization", func(t *testing.T) {
+		err := c.DeleteOrganization(org.Name)
+		if err != nil {
+			t.Fatal("error deleting Organization:", err)
+		}
+	})
+
+	t.Run("delete schedule", func(t *testing.T) {
+		err := c.DeleteSchedule(machine.Name)
+		if err != nil {
+			t.Fatal("error deleting Schedule:", err)
+		}
+	})
+
+	t.Run("delete task", func(t *testing.T) {
+		err := c.DeleteTask(task.Name)
+		if err != nil {
+			t.Fatal("error deleting Task:", err)
+		}
+	})
+
+	t.Run("delete user token", func(t *testing.T) {
+		err := c.DeleteUserToken(userToken.Value)
+		if err != nil {
+			t.Fatal("error deleting UserToken:", err)
+		}
+	})
+
+	t.Run("delete machine token", func(t *testing.T) {
+		err := c.DeleteMachineToken(machineToken.Value)
+		if err != nil {
+			t.Fatal("error deleting MachineToken:", err)
+		}
+	})
+
+	t.Run("delete login info", func(t *testing.T) {
+		err := c.DeleteLoginInfo(loginInfo.Username)
+		if err != nil {
+			t.Fatal("error deleting LoginInfo:", err)
+		}
+	})
 }

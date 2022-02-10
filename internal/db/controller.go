@@ -38,14 +38,14 @@ type Controller interface {
 	UpdateMachineToken(*MachineToken) error
 	UpdateLoginInfo(*LoginInfo) error
 	// Delete
-	DeleteUser(name string) (*User, error)
-	DeleteMachine(name string) (*Machine, error)
-	DeleteOrganization(name string) (*Organization, error)
-	DeleteSchedule(machineName string) (*Schedule, error)
-	DeleteTask(name string) (*Task, error)
-	DeleteUserToken(value pgtype.UUID) (*UserToken, error)
-	DeleteMachineToken(value pgtype.UUID) (*MachineToken, error)
-	DeleteLoginInfo(username string) (*LoginInfo, error)
+	DeleteUser(name string) error
+	DeleteMachine(name string) error
+	DeleteOrganization(name string) error
+	DeleteSchedule(machineName string) error
+	DeleteTask(name string) error
+	DeleteUserToken(value pgtype.UUID) error
+	DeleteMachineToken(value pgtype.UUID) error
+	DeleteLoginInfo(username string) error
 }
 
 type controller struct {
@@ -323,19 +323,11 @@ func (c *controller) UpdateUserToken(*UserToken) error       { return unimplemen
 func (c *controller) UpdateMachineToken(*MachineToken) error { return unimplemented }
 func (c *controller) UpdateLoginInfo(*LoginInfo) error       { return unimplemented }
 
-func (c *controller) DeleteUser(name string) (*User, error)       { return nil, unimplemented }
-func (c *controller) DeleteMachine(name string) (*Machine, error) { return nil, unimplemented }
-func (c *controller) DeleteOrganization(name string) (*Organization, error) {
-	return nil, unimplemented
-}
-func (c *controller) DeleteSchedule(machineName string) (*Schedule, error) { return nil, unimplemented }
-func (c *controller) DeleteTask(name string) (*Task, error)                { return nil, unimplemented }
-func (c *controller) DeleteUserToken(value pgtype.UUID) (*UserToken, error) {
-	return nil, unimplemented
-}
-func (c *controller) DeleteMachineToken(value pgtype.UUID) (*MachineToken, error) {
-	return nil, unimplemented
-}
-func (c *controller) DeleteLoginInfo(username string) (*LoginInfo, error) {
-	return nil, unimplemented
-}
+func (c *controller) DeleteUser(name string) error               { return unimplemented }
+func (c *controller) DeleteMachine(name string) error            { return unimplemented }
+func (c *controller) DeleteOrganization(name string) error       { return unimplemented }
+func (c *controller) DeleteSchedule(machineName string) error    { return unimplemented }
+func (c *controller) DeleteTask(name string) error               { return unimplemented }
+func (c *controller) DeleteUserToken(value pgtype.UUID) error    { return unimplemented }
+func (c *controller) DeleteMachineToken(value pgtype.UUID) error { return unimplemented }
+func (c *controller) DeleteLoginInfo(username string) error      { return unimplemented }
