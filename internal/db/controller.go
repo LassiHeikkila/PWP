@@ -323,11 +323,111 @@ func (c *controller) UpdateUserToken(*UserToken) error       { return unimplemen
 func (c *controller) UpdateMachineToken(*MachineToken) error { return unimplemented }
 func (c *controller) UpdateLoginInfo(*LoginInfo) error       { return unimplemented }
 
-func (c *controller) DeleteUser(name string) error               { return unimplemented }
-func (c *controller) DeleteMachine(name string) error            { return unimplemented }
-func (c *controller) DeleteOrganization(name string) error       { return unimplemented }
-func (c *controller) DeleteSchedule(machineName string) error    { return unimplemented }
-func (c *controller) DeleteTask(name string) error               { return unimplemented }
-func (c *controller) DeleteUserToken(value pgtype.UUID) error    { return unimplemented }
-func (c *controller) DeleteMachineToken(value pgtype.UUID) error { return unimplemented }
-func (c *controller) DeleteLoginInfo(username string) error      { return unimplemented }
+func (c *controller) DeleteUser(name string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`name = ?`, name).Delete(&User{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteMachine(name string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`name = ?`, name).Delete(&Machine{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteOrganization(name string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`name = ?`, name).Delete(&Organization{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteSchedule(machineName string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	machine, err := c.ReadMachine(machineName)
+	if err != nil {
+		return err
+	}
+
+	res := c.db.Where(`machine_id = ?`, machine.ID).Delete(&Schedule{})
+	err = res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteTask(name string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`name = ?`, name).Delete(&Task{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteUserToken(value pgtype.UUID) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`value = ?`, value).Delete(&UserToken{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteMachineToken(value pgtype.UUID) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`value = ?`, value).Delete(&MachineToken{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteLoginInfo(username string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Where(`username = ?`, username).Delete(&LoginInfo{})
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -405,6 +405,15 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	// delete schedule before machine, otherwise won't be able to find the schedule with machine name
+	t.Run("delete schedule", func(t *testing.T) {
+		// this will fail if updating machine also failed
+		err := c.DeleteSchedule(machine.Name)
+		if err != nil {
+			t.Fatal("error deleting Schedule:", err)
+		}
+	})
+
 	t.Run("delete machine", func(t *testing.T) {
 		err := c.DeleteMachine(machine.Name)
 		if err != nil {
@@ -416,13 +425,6 @@ func TestDBIntegration(t *testing.T) {
 		err := c.DeleteOrganization(org.Name)
 		if err != nil {
 			t.Fatal("error deleting Organization:", err)
-		}
-	})
-
-	t.Run("delete schedule", func(t *testing.T) {
-		err := c.DeleteSchedule(machine.Name)
-		if err != nil {
-			t.Fatal("error deleting Schedule:", err)
 		}
 	})
 
