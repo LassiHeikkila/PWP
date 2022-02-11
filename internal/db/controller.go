@@ -314,14 +314,125 @@ func (c *controller) ReadLoginInfo(username string) (*LoginInfo, error) {
 	return &loginInfo, nil
 }
 
-func (c *controller) UpdateUser(*User) error                 { return unimplemented }
-func (c *controller) UpdateMachine(*Machine) error           { return unimplemented }
-func (c *controller) UpdateOrganization(*Organization) error { return unimplemented }
-func (c *controller) UpdateSchedule(*Schedule) error         { return unimplemented }
-func (c *controller) UpdateTask(*Task) error                 { return unimplemented }
-func (c *controller) UpdateUserToken(*UserToken) error       { return unimplemented }
-func (c *controller) UpdateMachineToken(*MachineToken) error { return unimplemented }
-func (c *controller) UpdateLoginInfo(*LoginInfo) error       { return unimplemented }
+func (c *controller) UpdateUser(user *User) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(user)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved User with ID:", user.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateMachine(machine *Machine) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(machine)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved Machine with ID:", machine.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateOrganization(org *Organization) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(org)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved Organization with ID:", org.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateSchedule(schedule *Schedule) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(schedule)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved Schedule with ID:", schedule.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateTask(task *Task) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(task)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved Task with ID:", task.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateUserToken(userToken *UserToken) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(userToken)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved UserToken with ID:", userToken.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateMachineToken(machineToken *MachineToken) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(machineToken)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved MachineToken with ID:", machineToken.ID)
+
+	return nil
+}
+
+func (c *controller) UpdateLoginInfo(loginInfo *LoginInfo) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.Save(loginInfo)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved LoginInfo with ID:", loginInfo.ID)
+
+	return nil
+}
 
 func (c *controller) DeleteUser(name string) error {
 	if c == nil || c.db == nil {
