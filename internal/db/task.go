@@ -9,7 +9,7 @@ type Task struct {
 	gorm.Model
 	Name           string `gorm:"unique,not null"`
 	Description    string
-	Content        pgtype.JSON
-	Records        []Record `gorm:"foreignKey:TaskID"`
-	OrganizationID uint     `gorm:"not null"`
+	Content        pgtype.JSON `gorm:"type:json"`
+	Records        []Record    `gorm:"foreignKey:TaskID"`
+	OrganizationID uint        `gorm:"not null"`
 }
