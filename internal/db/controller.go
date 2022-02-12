@@ -19,15 +19,17 @@ type Controller interface {
 	CreateUserToken(*UserToken) error
 	CreateMachineToken(*MachineToken) error
 	CreateLoginInfo(*LoginInfo) error
+	CreateRecord(*Record) error
 	// Read
 	ReadUser(name string) (*User, error)
 	ReadMachine(name string) (*Machine, error)
 	ReadOrganization(name string) (*Organization, error)
 	ReadSchedule(machineName string) (*Schedule, error)
 	ReadTask(name string) (*Task, error)
-	ReadUserToken(vvalue pgtype.UUID) (*UserToken, error)
+	ReadUserToken(value pgtype.UUID) (*UserToken, error)
 	ReadMachineToken(value pgtype.UUID) (*MachineToken, error)
 	ReadLoginInfo(username string) (*LoginInfo, error)
+	ReadRecords(machineName string) ([]Record, error)
 	// Update
 	UpdateUser(*User) error
 	UpdateMachine(*Machine) error
@@ -37,6 +39,7 @@ type Controller interface {
 	UpdateUserToken(*UserToken) error
 	UpdateMachineToken(*MachineToken) error
 	UpdateLoginInfo(*LoginInfo) error
+	UpdateRecord(*Record) error
 	// Delete
 	DeleteUser(name string) error
 	DeleteMachine(name string) error
@@ -46,6 +49,7 @@ type Controller interface {
 	DeleteUserToken(value pgtype.UUID) error
 	DeleteMachineToken(value pgtype.UUID) error
 	DeleteLoginInfo(username string) error
+	DeleteRecords(machineName string) error
 }
 
 type controller struct {
@@ -181,6 +185,14 @@ func (c *controller) CreateLoginInfo(loginInfo *LoginInfo) error {
 	return nil
 }
 
+func (c *controller) CreateRecord(record *Record) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	return unimplemented
+}
+
 func (c *controller) ReadUser(name string) (*User, error) {
 	if c == nil || c.db == nil {
 		return nil, noDB
@@ -314,6 +326,14 @@ func (c *controller) ReadLoginInfo(username string) (*LoginInfo, error) {
 	return &loginInfo, nil
 }
 
+func (c *controller) ReadRecords(machineName string) ([]Record, error) {
+	if c == nil || c.db == nil {
+		return nil, noDB
+	}
+
+	return nil, unimplemented
+}
+
 func (c *controller) UpdateUser(user *User) error {
 	if c == nil || c.db == nil {
 		return noDB
@@ -434,6 +454,14 @@ func (c *controller) UpdateLoginInfo(loginInfo *LoginInfo) error {
 	return nil
 }
 
+func (c *controller) UpdateRecord(*Record) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	return unimplemented
+}
+
 func (c *controller) DeleteUser(name string) error {
 	if c == nil || c.db == nil {
 		return noDB
@@ -541,4 +569,12 @@ func (c *controller) DeleteLoginInfo(username string) error {
 		return err
 	}
 	return nil
+}
+
+func (c *controller) DeleteRecords(machineName string) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	return unimplemented
 }

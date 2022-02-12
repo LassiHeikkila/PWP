@@ -12,4 +12,5 @@ type Machine struct {
 	Arch           string
 	OrganizationID uint
 	ScheduleID     uint
+	Records        []Record `gorm:"foreignKey:ID"`
 }
