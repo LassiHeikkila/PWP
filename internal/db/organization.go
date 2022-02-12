@@ -9,4 +9,5 @@ type Organization struct {
 	Name     string    `gorm:"unique,not null"`
 	Users    []User    `gorm:"foreignKey:OrganizationID"`
 	Machines []Machine `gorm:"foreignKey:OrganizationID"`
+	Tasks    []Task    `gorm:"foreignKey:OrganizationID"`
 }

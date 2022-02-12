@@ -7,8 +7,9 @@ import (
 
 type Task struct {
 	gorm.Model
-	Name        string `gorm:"unique,not null"`
-	Description string
-	Content     pgtype.JSON
-	Records     []Record `gorm:"foreignKey:TaskID"`
+	Name           string `gorm:"unique,not null"`
+	Description    string
+	Content        pgtype.JSON
+	Records        []Record `gorm:"foreignKey:TaskID"`
+	OrganizationID uint     `gorm:"not null"`
 }

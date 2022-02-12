@@ -159,6 +159,7 @@ func TestDBIntegration(t *testing.T) {
 
 	user.OrganizationID = org.ID
 	machine.OrganizationID = org.ID
+	task.OrganizationID = org.ID
 
 	t.Run("test user creation", func(t *testing.T) {
 		err := c.CreateUser(&user)
@@ -193,10 +194,10 @@ func TestDBIntegration(t *testing.T) {
 	loginInfo.User = user
 
 	record := Record{
-		MachineID: machine.ID,
-		Timestamp: time.Now(),
-		Status:    0,
-		Output:    "success",
+		MachineID:  machine.ID,
+		ExecutedAt: time.Now(),
+		Status:     0,
+		Output:     "success",
 	}
 
 	t.Run("test schedule creation", func(t *testing.T) {
