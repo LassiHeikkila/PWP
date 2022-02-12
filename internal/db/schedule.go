@@ -8,6 +8,6 @@ import (
 type Schedule struct {
 	gorm.Model
 	Content   pgtype.JSON
-	MachineID uint
+	MachineID uint `gorm:"not null"`
 	Machine   Machine
 }

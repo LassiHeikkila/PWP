@@ -8,8 +8,10 @@ import (
 
 type Record struct {
 	gorm.Model
-	MachineID uint
-	TaskID    uint
+	MachineID uint `gorm:"not null"`
+	Machine   Machine
+	TaskID    uint `gorm:"not null"`
+	Task      Task
 	Timestamp time.Time
 	Status    int
 	Output    string

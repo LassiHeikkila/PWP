@@ -124,7 +124,6 @@ func TestDBIntegration(t *testing.T) {
 	sj := pgtype.JSON{}
 	sj.Set([]byte(`{"some":"json object"}`))
 	schedule := Schedule{
-		Machine: machine,
 		Content: sj,
 	}
 	tj := pgtype.JSON{}
@@ -150,6 +149,16 @@ func TestDBIntegration(t *testing.T) {
 		Expiration: time.Now().Add(time.Hour),
 		// id is set after adding user to db, it is added by gorm to the user object
 	}
+
+	t.Run("test organization creation", func(t *testing.T) {
+		err := c.CreateOrganization(&org)
+		if err != nil {
+			t.Fatal("error creating Organization:", err)
+		}
+	})
+
+	user.OrganizationID = org.ID
+	machine.OrganizationID = org.ID
 
 	t.Run("test user creation", func(t *testing.T) {
 		err := c.CreateUser(&user)
@@ -178,15 +187,6 @@ func TestDBIntegration(t *testing.T) {
 	schedule.MachineID = machine.ID
 	org.Machines = append(org.Machines, machine)
 
-	t.Run("test organization creation", func(t *testing.T) {
-		err := c.CreateOrganization(&org)
-		if err != nil {
-			t.Fatal("error creating Organization:", err)
-		}
-	})
-
-	user.OrganizationID = org.ID
-	machine.OrganizationID = org.ID
 	userToken.User = user
 	machineToken.Machine = machine
 	loginInfo.UserID = user.ID
@@ -194,7 +194,6 @@ func TestDBIntegration(t *testing.T) {
 
 	record := Record{
 		MachineID: machine.ID,
-		TaskID:    task.ID,
 		Timestamp: time.Now(),
 		Status:    0,
 		Output:    "success",
@@ -206,6 +205,7 @@ func TestDBIntegration(t *testing.T) {
 			t.Fatal("error creating Schedule:", err)
 		}
 	})
+	schedule.Machine = machine
 
 	t.Run("test task creation", func(t *testing.T) {
 		err := c.CreateTask(&task)
@@ -213,6 +213,7 @@ func TestDBIntegration(t *testing.T) {
 			t.Fatal("error creating Task:", err)
 		}
 	})
+	record.TaskID = task.ID
 
 	t.Run("test user token creation", func(t *testing.T) {
 		err := c.CreateUserToken(&userToken)

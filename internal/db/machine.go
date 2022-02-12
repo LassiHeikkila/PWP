@@ -10,7 +10,6 @@ type Machine struct {
 	Description    string
 	OS             string
 	Arch           string
-	OrganizationID uint
-	ScheduleID     uint
-	Records        []Record `gorm:"foreignKey:ID"`
+	OrganizationID uint     `gorm:"not null"`
+	Records        []Record `gorm:"foreignKey:MachineID"`
 }

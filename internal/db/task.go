@@ -10,4 +10,5 @@ type Task struct {
 	Name        string `gorm:"unique,not null"`
 	Description string
 	Content     pgtype.JSON
+	Records     []Record `gorm:"foreignKey:TaskID"`
 }
