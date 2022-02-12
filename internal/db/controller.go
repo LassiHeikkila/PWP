@@ -331,7 +331,19 @@ func (c *controller) ReadRecords(machineName string) ([]Record, error) {
 		return nil, noDB
 	}
 
-	return nil, unimplemented
+	machine, err := c.ReadMachine(machineName)
+	if err != nil {
+		return nil, err
+	}
+
+	var records []Record
+	res := c.db.Where(`machine_id = ?`, machine.ID).Find(&records)
+	err = res.Error
+	if err != nil {
+		return nil, err
+	}
+
+	return records, nil
 }
 
 func (c *controller) UpdateUser(user *User) error {
