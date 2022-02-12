@@ -591,8 +591,7 @@ func (c *controller) DeleteLoginInfo(username string) error {
 	}
 
 	res := c.db.Where(`username = ?`, username).Delete(&LoginInfo{})
-	err := res.Error
-	if err != nil {
+	if err := res.Error; err != nil {
 		return err
 	}
 	return nil
@@ -603,5 +602,14 @@ func (c *controller) DeleteRecords(machineName string) error {
 		return noDB
 	}
 
-	return unimplemented
+	machine, err := c.ReadMachine(machineName)
+	if err != nil {
+		return err
+	}
+
+	res := c.db.Where(`machine_id = ?`, machine.ID).Delete(&Record{})
+	if err := res.Error; err != nil {
+		return err
+	}
+	return nil
 }

@@ -447,6 +447,14 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	// delete records before machne, otherwise won't be able to find the records with machine name
+	t.Run("delete machine records", func(t *testing.T) {
+		err := c.DeleteRecords(machine.Name)
+		if err != nil {
+			t.Fatal("error deleting machine Records:", err)
+		}
+	})
+
 	t.Run("delete machine", func(t *testing.T) {
 		err := c.DeleteMachine(machine.Name)
 		if err != nil {
@@ -486,13 +494,6 @@ func TestDBIntegration(t *testing.T) {
 		err := c.DeleteLoginInfo(loginInfo.Username)
 		if err != nil {
 			t.Fatal("error deleting LoginInfo:", err)
-		}
-	})
-
-	t.Run("delete machine records", func(t *testing.T) {
-		err := c.DeleteRecords(machine.Name)
-		if err != nil {
-			t.Fatal("error deleting machine Records:", err)
 		}
 	})
 }
