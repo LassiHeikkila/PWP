@@ -190,7 +190,13 @@ func (c *controller) CreateRecord(record *Record) error {
 		return noDB
 	}
 
-	return unimplemented
+	res := c.db.Create(record)
+	if err := res.Error; err != nil {
+		log.Println("error creating Record:", err)
+		return err
+	}
+	log.Println("inserted Record with ID:", record.ID)
+	return nil
 }
 
 func (c *controller) ReadUser(name string) (*User, error) {
@@ -342,6 +348,8 @@ func (c *controller) ReadRecords(machineName string) ([]Record, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("found %d Record(s) for machine \"%s\"\n", len(records), machineName)
 
 	return records, nil
 }
