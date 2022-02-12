@@ -192,6 +192,14 @@ func TestDBIntegration(t *testing.T) {
 	loginInfo.UserID = user.ID
 	loginInfo.User = user
 
+	record := Record{
+		MachineID: machine.ID,
+		TaskID:    task.ID,
+		Timestamp: time.Now(),
+		Status:    0,
+		Output:    "success",
+	}
+
 	t.Run("test schedule creation", func(t *testing.T) {
 		err := c.CreateSchedule(&schedule)
 		if err != nil {
@@ -217,6 +225,13 @@ func TestDBIntegration(t *testing.T) {
 		err := c.CreateMachineToken(&machineToken)
 		if err != nil {
 			t.Fatal("error creating MachineToken:", err)
+		}
+	})
+
+	t.Run("test record creation", func(t *testing.T) {
+		err := c.CreateRecord(&record)
+		if err != nil {
+			t.Fatal("error creating Record:", err)
 		}
 	})
 
@@ -332,6 +347,16 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	t.Run("test record read", func(t *testing.T) {
+		r, err := c.ReadRecords(machine.Name)
+		if err != nil {
+			t.Fatal("error reading machine Records:", err)
+		}
+		if len(r) == 0 {
+			t.Fatal("no records found")
+		}
+	})
+
 	t.Run("update user", func(t *testing.T) {
 		user.Name = "Lassi2"
 		err := c.UpdateUser(&user)
@@ -398,6 +423,14 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
+	t.Run("update record", func(t *testing.T) {
+		record.Output = "redacted"
+		err := c.UpdateRecord(&record)
+		if err != nil {
+			t.Fatal("error updating record:", err)
+		}
+	})
+
 	t.Run("delete user", func(t *testing.T) {
 		err := c.DeleteUser(user.Name)
 		if err != nil {
@@ -453,6 +486,13 @@ func TestDBIntegration(t *testing.T) {
 		err := c.DeleteLoginInfo(loginInfo.Username)
 		if err != nil {
 			t.Fatal("error deleting LoginInfo:", err)
+		}
+	})
+
+	t.Run("delete machine records", func(t *testing.T) {
+		err := c.DeleteRecords(machine.Name)
+		if err != nil {
+			t.Fatal("error deleting machine Records:", err)
 		}
 	})
 }
