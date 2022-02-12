@@ -474,12 +474,19 @@ func (c *controller) UpdateLoginInfo(loginInfo *LoginInfo) error {
 	return nil
 }
 
-func (c *controller) UpdateRecord(*Record) error {
+func (c *controller) UpdateRecord(record *Record) error {
 	if c == nil || c.db == nil {
 		return noDB
 	}
 
-	return unimplemented
+	res := c.db.Save(record)
+	err := res.Error
+	if err != nil {
+		return err
+	}
+	log.Println("Saved Record with ID:", record.ID)
+
+	return nil
 }
 
 func (c *controller) DeleteUser(name string) error {
