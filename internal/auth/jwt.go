@@ -21,6 +21,7 @@ type authController struct {
 type claims struct {
 	User         string `json:"user"`
 	Organization string `json:"organization"`
+	Role         int    `json:"role"`
 
 	jwt.StandardClaims
 }
@@ -45,10 +46,11 @@ func NewController(key []byte) *authController {
 	}
 }
 
-func CreateClaims(user string, organization string) jwt.Claims {
+func CreateClaims(user string, organization string, role int) jwt.Claims {
 	return &claims{
 		User:         user,
 		Organization: organization,
+		Role:         role,
 		StandardClaims: jwt.StandardClaims{
 			Issuer: IssuerName,
 		},
@@ -65,7 +67,7 @@ func (a *authController) CreateJWT(claims jwt.Claims) (string, error) {
 	return s, nil
 }
 
-func (a *authController) ValidateToken(tokenString string, user string, organization string) bool {
+func (a *authController) ValidateToken(tokenString string, user *string, organization *string, role *int) bool {
 	// implementation inspired by example at https://pkg.go.dev/github.com/golang-jwt/jwt#example-Parse-Hmac
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
@@ -81,10 +83,27 @@ func (a *authController) ValidateToken(tokenString string, user string, organiza
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		claimedUser := claims["user"]
-		claimerOrganization := claims["organization"]
+		if u, ok := claims["user"]; ok {
+			_, ok := u.(string)
+			if ok && user != nil {
+				*user = u.(string)
+			}
+		}
+		if o, ok := claims["organization"]; ok {
+			_, ok := o.(string)
+			if ok && organization != nil {
+				*organization = o.(string)
+			}
+		}
+		if r, ok := claims["role"]; ok {
+			// unmarshalled JSON has all numbers as float64 so just have to cast to integer
+			_, ok := r.(float64)
+			if ok && role != nil {
+				*role = int(r.(float64))
+			}
+		}
 
-		return claimedUser == user && claimerOrganization == organization
+		return true
 	}
 	return false
 }
