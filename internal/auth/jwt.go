@@ -18,10 +18,17 @@ type authController struct {
 	key []byte
 }
 
-type claims struct {
+type userClaims struct {
 	User         string `json:"user"`
 	Organization string `json:"organization"`
 	Role         int    `json:"role"`
+
+	jwt.StandardClaims
+}
+
+type machineClaims struct {
+	Machine      string `json:"machine"`
+	Organization string `json:"organization"`
 
 	jwt.StandardClaims
 }
@@ -46,11 +53,21 @@ func NewController(key []byte) *authController {
 	}
 }
 
-func CreateClaims(user string, organization string, role int) jwt.Claims {
-	return &claims{
+func CreateUserClaims(user string, organization string, role int) jwt.Claims {
+	return &userClaims{
 		User:         user,
 		Organization: organization,
 		Role:         role,
+		StandardClaims: jwt.StandardClaims{
+			Issuer: IssuerName,
+		},
+	}
+}
+
+func CreateMachineClaims(machine string, organization string) jwt.Claims {
+	return &machineClaims{
+		Machine:      machine,
+		Organization: organization,
 		StandardClaims: jwt.StandardClaims{
 			Issuer: IssuerName,
 		},
@@ -67,7 +84,7 @@ func (a *authController) CreateJWT(claims jwt.Claims) (string, error) {
 	return s, nil
 }
 
-func (a *authController) ValidateToken(tokenString string, user *string, organization *string, role *int) bool {
+func (a *authController) ValidateUserToken(tokenString string, user *string, organization *string, role *int) bool {
 	// implementation inspired by example at https://pkg.go.dev/github.com/golang-jwt/jwt#example-Parse-Hmac
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
@@ -100,6 +117,40 @@ func (a *authController) ValidateToken(tokenString string, user *string, organiz
 			_, ok := r.(float64)
 			if ok && role != nil {
 				*role = int(r.(float64))
+			}
+		}
+
+		return true
+	}
+	return false
+}
+
+func (a *authController) ValidateMachineToken(tokenString string, machine *string, organization *string) bool {
+	// implementation inspired by example at https://pkg.go.dev/github.com/golang-jwt/jwt#example-Parse-Hmac
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return a.key, nil
+	})
+	if err != nil {
+		log.Println("error parsing token:", err)
+		return false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if m, ok := claims["machine"]; ok {
+			_, ok := m.(string)
+			if ok && machine != nil {
+				*machine = m.(string)
+			}
+		}
+		if o, ok := claims["organization"]; ok {
+			_, ok := o.(string)
+			if ok && organization != nil {
+				*organization = o.(string)
 			}
 		}
 
