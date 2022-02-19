@@ -26,3 +26,15 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name: Upload a taskey artifact
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: taskey
+        path: taskey
+
+    - name: Upload a taskeyd artifact
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: taskeyd
+        path: taskeyd
