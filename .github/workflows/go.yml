@@ -18,8 +18,11 @@ jobs:
       with:
         go-version: 1.17
 
-    - name: Build
-      run: go build -v ./...
+    - name: Build service
+      run: go build -o taskey -v ./cmd/taskey
+
+    - name: Build client
+      run: go build -o taskeyd -v ./cmd/taskeyd
 
     - name: Test
       run: go test -v ./...
