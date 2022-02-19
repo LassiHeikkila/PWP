@@ -31,4 +31,6 @@ jobs:
       uses: actions/upload-artifact@v2.3.1
       with:
         name: taskey and taskeyd
-        path: taskey*
+        path: |
+          taskey
+          taskeyd
