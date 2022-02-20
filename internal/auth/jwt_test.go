@@ -7,7 +7,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestRoundRobinUserToken(t *testing.T) {
+func TestRoundTripUserToken(t *testing.T) {
 	a := NewController([]byte("my-test-key"))
 
 	user := "user"
@@ -37,7 +37,7 @@ func TestRoundRobinUserToken(t *testing.T) {
 	}
 }
 
-func TestRoundRobinMachineToken(t *testing.T) {
+func TestRoundTripMachineToken(t *testing.T) {
 	a := NewController([]byte("my-test-key"))
 
 	machine := "machine"
