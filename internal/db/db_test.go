@@ -112,7 +112,7 @@ func TestDBIntegration(t *testing.T) {
 	}
 	loginInfo := LoginInfo{
 		Username: "lassi",
-		Password: "changeme",
+		Password: "changeme", // this should be hashed IRL
 	}
 	machine := Machine{
 		Name:        "Lassi's Raspberry Pi",
