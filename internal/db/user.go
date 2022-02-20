@@ -2,6 +2,8 @@ package db
 
 import (
 	"gorm.io/gorm"
+
+	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
 type User struct {
@@ -9,5 +11,5 @@ type User struct {
 	Name           string `gorm:"unique,not null"`
 	OrganizationID uint   `gorm:"not null"`
 	Organization   Organization
-	Role           int8 `gorm:"not null"`
+	Role           types.Role `gorm:"not null"`
 }

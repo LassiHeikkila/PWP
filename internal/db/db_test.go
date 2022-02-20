@@ -8,6 +8,8 @@ import (
 	"github.com/jackc/pgtype"
 	"gorm.io/gorm"
 
+	"github.com/LassiHeikkila/taskey/pkg/types"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -106,7 +108,7 @@ func TestDBIntegration(t *testing.T) {
 
 	user := User{
 		Name: "Lassi",
-		Role: int8(RoleRoot | RoleAdministrator),
+		Role: types.RoleRoot | types.RoleAdministrator,
 	}
 	loginInfo := LoginInfo{
 		Username: "lassi",
