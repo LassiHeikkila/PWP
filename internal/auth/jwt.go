@@ -12,7 +12,11 @@ const (
 	IssuerName = "taskey-auth-service"
 )
 
-type Controller interface{}
+type Controller interface {
+	CreateJWT(claims jwt.Claims) (string, error)
+	ValidateUserToken(tokenString string, user *string, organization *string, role *int) bool
+	ValidateMachineToken(tokenString string, machine *string, organization *string) bool
+}
 
 type authController struct {
 	key []byte
