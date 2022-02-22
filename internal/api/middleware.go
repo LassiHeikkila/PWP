@@ -34,13 +34,24 @@ func NewAuthUserMiddleware(
 
 func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// check that token is valid, contains a legit user & organization, and role is what is required
-	scheme := auth.GetAuthenticationScheme(r.Header.Get("Authorization"))
-	if scheme == auth.AuthenticationSchemeNone {
+	scheme, value := auth.GetAuthenticationSchemeAndValue(r.Header.Get("Authorization"))
+	var user *types.User
+	if scheme == auth.AuthenticationSchemeBearer {
+		// validate token and read user info from it,
+		// if its valid, call handler with the User
+		user = lookupUserByJWT(a.authController, value)
+	}
+	if scheme == auth.AuthenticationSchemeKey {
+		// look up token in db,
+		// if it exists and isn't revoked
+		// call handler with corresponding User
+		user = lookupUserByToken(a.dbController, value)
+	}
+	if user == nil {
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
-
-	a.handler(w, r, &types.User{})
+	a.handler(w, r, user)
 }
 
 type AuthMachineMW struct {

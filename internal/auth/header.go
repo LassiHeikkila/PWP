@@ -17,11 +17,11 @@ var authenticationSchemePrefixes = map[AuthenticationScheme]string{
 	AuthenticationSchemeKey:    "Key ",
 }
 
-func GetAuthenticationScheme(header string) AuthenticationScheme {
+func GetAuthenticationSchemeAndValue(header string) (AuthenticationScheme, string) {
 	for scheme, prefix := range authenticationSchemePrefixes {
 		if strings.HasPrefix(header, prefix) {
-			return scheme
+			return scheme, strings.TrimPrefix(header, prefix)
 		}
 	}
-	return AuthenticationSchemeNone
+	return AuthenticationSchemeNone, ""
 }
