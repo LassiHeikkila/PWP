@@ -15,14 +15,14 @@ type AuthUserMW struct {
 
 	authController auth.Controller
 	dbController   db.Controller
-	requiredRole   int
+	requiredRole   types.Role
 }
 
 func NewAuthUserMiddleware(
 	next AuthenticatedUserHandler,
 	authController auth.Controller,
 	dbController db.Controller,
-	requiredRole int,
+	requiredRole types.Role,
 ) *AuthUserMW {
 	return &AuthUserMW{
 		handler:        next,
@@ -51,6 +51,10 @@ func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
+	if !types.HasRole(user.Role, a.requiredRole) {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
+	}
 	a.handler(w, r, user)
 }
 
@@ -74,5 +78,18 @@ func NewAuthMachineMiddleware(
 }
 
 func (a *AuthMachineMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.handler(w, r, &types.Machine{})
+	// check that token is valid, contains a legit machine key
+	scheme, value := auth.GetAuthenticationSchemeAndValue(r.Header.Get("Authorization"))
+	var machine *types.Machine
+	if scheme == auth.AuthenticationSchemeKey {
+		// look up token in db,
+		// if it exists and isn't revoked
+		// call handler with corresponding Machine
+		machine = lookupMachineByToken(a.dbController, value)
+	}
+	if machine == nil {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+	a.handler(w, r, machine)
 }

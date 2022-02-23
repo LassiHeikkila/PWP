@@ -42,3 +42,21 @@ func lookupUserByToken(dbController db.Controller, token string) *types.User {
 		Role:         r.User.Role,
 	}
 }
+
+func lookupMachineByToken(dbController db.Controller, token string) *types.Machine {
+	u := pgtype.UUID{}
+	if err := u.Set(token); err != nil {
+		return nil
+	}
+
+	r, err := dbController.ReadMachineToken(u)
+	if err != nil {
+		return nil
+	}
+	return &types.Machine{
+		Name:        r.Machine.Name,
+		Description: r.Machine.Description,
+		OS:          r.Machine.OS,
+		Arch:        r.Machine.Arch,
+	}
+}
