@@ -38,6 +38,7 @@ func lookupUserByToken(dbController db.Controller, token string) *types.User {
 	}
 	return &types.User{
 		Name:         r.User.Name,
+		Email:        r.User.Email,
 		Organization: r.User.Organization.Name,
 		Role:         r.User.Role,
 	}

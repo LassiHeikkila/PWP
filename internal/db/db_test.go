@@ -107,8 +107,9 @@ func TestDBIntegration(t *testing.T) {
 	}
 
 	user := User{
-		Name: "Lassi",
-		Role: types.RoleRoot | types.RoleAdministrator,
+		Name:  "Lassi",
+		Email: "lassi@example.com",
+		Role:  types.RoleRoot | types.RoleAdministrator,
 	}
 	loginInfo := LoginInfo{
 		Username: "lassi",
