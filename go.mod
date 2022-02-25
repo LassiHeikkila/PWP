@@ -55,4 +55,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-require github.com/opencontainers/runc v1.0.3 // indirect
+require (
+	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/opencontainers/runc v1.0.3 // indirect
+)
