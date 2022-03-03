@@ -93,3 +93,23 @@ func (a *AuthMachineMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	a.handler(w, r, machine)
 }
+
+func (h *handler) requiresAdmin(next AuthenticatedUserHandler) http.Handler {
+	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleAdministrator)
+}
+
+func (h *handler) requiresMaintainer(next AuthenticatedUserHandler) http.Handler {
+	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleMaintainer)
+}
+
+func (h *handler) requiresRoot(next AuthenticatedUserHandler) http.Handler {
+	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleRoot)
+}
+
+func (h *handler) requiresUser(next AuthenticatedUserHandler) http.Handler {
+	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleUser)
+}
+
+func (h *handler) requiresMachine(next AuthenticatedMachineHandler) http.Handler {
+	return NewAuthMachineMiddleware(next, h.a, h.d)
+}
