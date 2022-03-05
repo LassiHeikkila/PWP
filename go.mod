@@ -5,8 +5,10 @@ go 1.17
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-cmp v0.5.7
+	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgtype v1.9.1
 	github.com/testcontainers/testcontainers-go v0.12.0
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
 )
@@ -45,7 +47,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	go.opencensus.io v0.22.3 // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/net v0.0.0-20211108170745-6635138e15ea // indirect
 	golang.org/x/sys v0.0.0-20211109184856-51b60fd695b3 // indirect
 	golang.org/x/text v0.3.7 // indirect
@@ -56,6 +57,6 @@ require (
 )
 
 require (
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/opencontainers/runc v1.0.3 // indirect
 )
