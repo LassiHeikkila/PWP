@@ -51,13 +51,17 @@ func (h *handler) setMachineRoutesV1() {
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/tokens/", h.requiresAdmin(h.createMachineToken)).Methods(http.MethodPost)
 	// delete token
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/tokens/{token}", h.requiresAdmin(h.deleteMachineToken)).Methods(http.MethodDelete)
+}
 
+func (h *handler) setScheduleRoutesV1() {
 	// create, read, update or delete machine schedule
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.createMachineSchedule)).Methods(http.MethodPost)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.readMachineSchedule)).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.updateMachineSchedule)).Methods(http.MethodPut)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.deleteMachineSchedule)).Methods(http.MethodDelete)
+}
 
+func (h *handler) setRecordRoutesV1() {
 	// create and read records
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresMachine(h.addRecord)).Methods(http.MethodPost)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresUser(h.getRecords)).Methods(http.MethodGet)
