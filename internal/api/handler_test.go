@@ -189,6 +189,9 @@ func TestProcessRequestGetUser(t *testing.T) {
 	if err := h.RegisterAuthenticationHandlers(); err != nil {
 		t.Fatal("error registering authentication handlers:", err)
 	}
+	if err := h.RegisterRecordHandlers(); err != nil {
+		t.Fatal("error registering record handlers:", err)
+	}
 
 	server := httptest.NewServer(h)
 

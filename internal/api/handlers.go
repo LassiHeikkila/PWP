@@ -74,3 +74,8 @@ func (h *handler) RegisterAuthenticationHandlers() error {
 	h.setAuthRoutesV1()
 	return nil
 }
+
+func (h *handler) RegisterRecordHandlers() error {
+	h.setRecordRoutesV1()
+	return nil
+}
