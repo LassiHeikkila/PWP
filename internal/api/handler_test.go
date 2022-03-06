@@ -11,6 +11,7 @@ import (
 
 	"github.com/LassiHeikkila/taskey/internal/auth/mock"
 	"github.com/LassiHeikkila/taskey/internal/db/mock"
+	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
 // check that public interface is implemented
@@ -197,6 +198,33 @@ func TestProcessRequestGetUser(t *testing.T) {
 
 	client := http.DefaultClient
 	req, _ := http.NewRequest(http.MethodGet, server.URL+"/api/v1/org123/users/user456/", nil)
+	req.Header.Set("Authorization", "Bearer my test key")
+	var setUser, setOrganization string
+	var setRole types.Role
+
+	a.EXPECT().ValidateUserToken(
+		"my test key",
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+	).DoAndReturn(func(tokenString string, user *string, organization *string, role *int) bool {
+		if tokenString != "my test key" {
+			return false
+		}
+		if user != nil {
+			*user = "Lassi"
+		}
+		setUser = "Lassi"
+		if organization != nil {
+			*organization = "example.com"
+		}
+		setOrganization = "example.com"
+		if role != nil {
+			*role = int(types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot)
+		}
+		setRole = types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot
+		return true
+	})
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -209,4 +237,8 @@ func TestProcessRequestGetUser(t *testing.T) {
 	if err := dec.Decode(&response); err != nil {
 		t.Fatal("failed to decode response as JSON:", err)
 	}
+
+	_ = setUser
+	_ = setOrganization
+	_ = setRole
 }
