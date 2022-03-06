@@ -22,3 +22,9 @@ type UserToken struct {
 	UserID     uint
 	User       User
 }
+
+func StringToUUID(s string) pgtype.UUID {
+	u := pgtype.UUID{}
+	u.Set(s)
+	return u
+}
