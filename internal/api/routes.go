@@ -14,6 +14,14 @@ import (
 
 */
 
+const (
+	orgIDKey = "organization_id"
+	userIDKey = "user_id"
+	machineIDKey = "machine_id"
+	recordIDKey = "record_id"
+	tokenKey = "token"
+)
+
 func (h *handler) setOrgRoutesV1() {
 	// create organization
 	h.router.Handle("/api/v1/organizations/", h.requiresRoot(h.createOrganization)).Methods(http.MethodPost)

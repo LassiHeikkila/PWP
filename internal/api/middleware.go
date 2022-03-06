@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/LassiHeikkila/taskey/internal/auth"
 	"github.com/LassiHeikkila/taskey/internal/db"
 	"github.com/LassiHeikkila/taskey/pkg/types"
@@ -92,6 +94,45 @@ func (a *AuthMachineMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.handler(w, r, machine)
+}
+
+// should be used when accessing resources belonging to an organization
+type MemberOfOrganizationMW struct {
+	handler AuthenticatedUserHandler
+
+	dbController db.Controller
+}
+
+func NewMemberOfOrganizationMW(
+	next AuthenticatedUserHandler,
+	dbController db.Controller,
+) *MemberOfOrganizationMW {
+	return &MemberOfOrganizationMW{
+		handler:      next,
+		dbController: dbController,
+	}
+}
+
+func (m *MemberOfOrganizationMW) ServeHTTP(
+	w http.ResponseWriter,
+	req *http.Request,
+	user *types.User,
+) {
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+
+	org := lookupOrganizationByID(m.dbController, orgID)
+	if org == nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	if user.Organization != org.Name {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
+	m.handler(w, req, user)
 }
 
 func (h *handler) requiresAdmin(next AuthenticatedUserHandler) http.Handler {

@@ -61,3 +61,13 @@ func lookupMachineByToken(dbController db.Controller, token string) *types.Machi
 		Arch:        r.Machine.Arch,
 	}
 }
+
+func lookupOrganizationByID(dbController db.Controller, id string) *types.Organization {
+	o, err := dbController.ReadOrganization(id)
+	if err != nil {
+		return nil
+	}
+	return &types.Organization{
+		Name: o.Name,
+	}
+}
