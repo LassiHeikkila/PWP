@@ -1,8 +1,12 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
+	"github.com/LassiHeikkila/taskey/internal/db/dbconverter"
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
@@ -42,10 +46,35 @@ func (h *handler) createUser(w http.ResponseWriter, req *http.Request, user *typ
 	http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
 }
 
-func (h *handler) readUser(w http.ResponseWriter, req *http.Request, user *types.User) {
-	// TODO: implement
+// /api/v1/{organization_id}/users/{user_id}/
+func (h *handler) readUser(w http.ResponseWriter, req *http.Request, caller *types.User) {
 	defer req.Body.Close()
-	http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+	userID := vars[userIDKey]
+
+	u, err := h.d.ReadUser(userID)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if u.OrganizationID != o.ID {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	user := dbconverter.ConvertUser(*u)
+
+	enc := json.NewEncoder(w)
+	w.Header().Set("Content-Type", "application/json")
+	enc.Encode(user)
 }
 
 func (h *handler) updateUser(w http.ResponseWriter, req *http.Request, user *types.User) {

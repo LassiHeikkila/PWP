@@ -2,14 +2,17 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 
 	"github.com/LassiHeikkila/taskey/internal/auth/mock"
+	"github.com/LassiHeikkila/taskey/internal/db"
 	"github.com/LassiHeikkila/taskey/internal/db/mock"
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
@@ -202,8 +205,6 @@ func TestProcessRequestGetUser(t *testing.T) {
 	client := http.DefaultClient
 	req, _ := http.NewRequest(http.MethodGet, server.URL+"/api/v1/org123/users/user456/", nil)
 	req.Header.Set("Authorization", "Bearer my test key")
-	var setUser, setOrganization string
-	var setRole types.Role
 
 	a.EXPECT().ValidateUserToken(
 		"my test key",
@@ -215,19 +216,38 @@ func TestProcessRequestGetUser(t *testing.T) {
 			return false
 		}
 		if user != nil {
-			*user = "Lassi"
+			*user = "user456"
 		}
-		setUser = "Lassi"
 		if organization != nil {
-			*organization = "example.com"
+			*organization = "org123"
 		}
-		setOrganization = "example.com"
 		if role != nil {
 			*role = int(types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot)
 		}
-		setRole = types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot
 		return true
 	})
+
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Organization: db.Organization{
+			Model: gorm.Model{
+				ID: 123,
+			},
+			Name: "org123",
+		},
+		Role: types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
+	d.EXPECT().ReadOrganization("org123").Return(&db.Organization{
+		Model: gorm.Model{
+			ID: 123,
+		},
+		Name: "org123",
+	}, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -236,12 +256,10 @@ func TestProcessRequestGetUser(t *testing.T) {
 	defer resp.Body.Close()
 
 	response := make(map[string]interface{})
-	dec := json.NewDecoder(resp.Body)
-	if err := dec.Decode(&response); err != nil {
-		t.Fatal("failed to decode response as JSON:", err)
+	b, _ := io.ReadAll(resp.Body)
+
+	if err := json.Unmarshal(b, &response); err != nil {
+		t.Fatal("failed to decode response as JSON: \"", err, "\", response was: \"", string(b), "\"")
 	}
 
-	_ = setUser
-	_ = setOrganization
-	_ = setRole
 }

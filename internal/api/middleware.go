@@ -154,3 +154,8 @@ func (h *handler) requiresUser(next AuthenticatedUserHandler) http.Handler {
 func (h *handler) requiresMachine(next AuthenticatedMachineHandler) http.Handler {
 	return NewAuthMachineMiddleware(next, h.a, h.d)
 }
+
+func (h *handler) mustBeMember(next AuthenticatedUserHandler) AuthenticatedUserHandler {
+	mw := NewMemberOfOrganizationMW(next, h.d)
+	return mw.ServeHTTP
+}

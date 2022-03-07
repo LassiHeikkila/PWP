@@ -15,18 +15,18 @@ import (
 */
 
 const (
-	orgIDKey = "organization_id"
-	userIDKey = "user_id"
+	orgIDKey     = "organization_id"
+	userIDKey    = "user_id"
 	machineIDKey = "machine_id"
-	recordIDKey = "record_id"
-	tokenKey = "token"
+	recordIDKey  = "record_id"
+	tokenKey     = "token"
 )
 
 func (h *handler) setOrgRoutesV1() {
 	// create organization
 	h.router.Handle("/api/v1/organizations/", h.requiresRoot(h.createOrganization)).Methods(http.MethodPost)
 	// read organization
-	h.router.Handle("/api/v1/organizations/{organization_id}/", h.requiresAdmin(h.readOrganization)).Methods(http.MethodGet)
+	h.router.Handle("/api/v1/organizations/{organization_id}/", h.requiresAdmin(h.mustBeMember(h.readOrganization))).Methods(http.MethodGet)
 	// update organization
 	h.router.Handle("/api/v1/organizations/{organization_id}/", h.requiresAdmin(h.readOrganization)).Methods(http.MethodPut)
 	// delete organization
