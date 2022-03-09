@@ -36,16 +36,18 @@ func (h *handler) setOrgRoutesV1() {
 func (h *handler) setUserRoutesV1() {
 	// create user
 	h.router.Handle("/api/v1/{organization_id}/users/", h.requiresAdmin(h.createUser)).Methods(http.MethodPost)
+	// read users
+	h.router.Handle("/api/v1/{organization_id}/users/", h.requiresAdmin(h.readUsers)).Methods(http.MethodGet)
 	// read user
 	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/", h.requiresUser(h.readUser)).Methods(http.MethodGet)
 	// update user
-	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/", h.requiresUser(h.updateUser)).Methods(http.MethodPut)
+	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/", h.requiresAdmin(h.updateUser)).Methods(http.MethodPut)
 	// delete user
-	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/", h.requiresUser(h.deleteUser)).Methods(http.MethodDelete)
+	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/", h.requiresAdmin(h.deleteUser)).Methods(http.MethodDelete)
 	// create token
 	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/tokens/", h.requiresAdmin(h.createUserToken)).Methods(http.MethodPost)
 	// delete / revoke token
-	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/tokens/{token}", h.requiresAdmin(h.deleteUserToken)).Methods(http.MethodDelete)
+	h.router.Handle("/api/v1/{organization_id}/users/{user_id}/tokens/{token}/", h.requiresAdmin(h.deleteUserToken)).Methods(http.MethodDelete)
 }
 
 func (h *handler) setMachineRoutesV1() {
@@ -58,7 +60,7 @@ func (h *handler) setMachineRoutesV1() {
 	// create token
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/tokens/", h.requiresAdmin(h.createMachineToken)).Methods(http.MethodPost)
 	// delete token
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/tokens/{token}", h.requiresAdmin(h.deleteMachineToken)).Methods(http.MethodDelete)
+	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/tokens/{token}/", h.requiresAdmin(h.deleteMachineToken)).Methods(http.MethodDelete)
 }
 
 func (h *handler) setScheduleRoutesV1() {
