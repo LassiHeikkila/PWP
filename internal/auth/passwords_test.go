@@ -15,8 +15,8 @@ func TestPasswordRoundTrip(t *testing.T) {
 }
 
 func TestBadPasswordCheck(t *testing.T) {
-	real := "myp@ssw0rd"
-	hashed := HashPassword(real)
+	realPW := "myp@ssw0rd"
+	hashed := HashPassword(realPW)
 
 	wrong := "mypassword"
 	if PasswordEqualsHashed(wrong, hashed) {
@@ -25,12 +25,13 @@ func TestBadPasswordCheck(t *testing.T) {
 }
 
 func BenchmarkHashPassword(b *testing.B) {
+	// intentionally using math/rand here // skipcq: GSC-G404
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	// use 32 character passwords as test, even if it is a bit generous
 	buf := make([]byte, 32)
 
 	for n := 0; n < b.N; n++ {
-		_, _ = r.Read(buf[:])
+		_, _ = r.Read(buf)
 
 		h := HashPassword(string(buf))
 		_ = h
