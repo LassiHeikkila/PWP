@@ -1,0 +1,677 @@
+openapi: 3.0.3
+info:
+  title: taskey API
+  description: |-
+    This is the API documentation for taskey.
+    It will help you understand how to interact with the server.
+    Source code for the project can be found at [taskey repository on Github](https://github.com/LassiHeikkila/taskey).
+  contact:
+    email: laheikki21@student.oulu.fi
+  license:
+    name: GNU General Public License
+    url: https://raw.githubusercontent.com/LassiHeikkila/taskey/main/LICENSE
+  version: 0.1.0
+servers:
+- url: http://localhost:8080/api/v1
+
+paths:
+  /organizations/:
+    post:
+      tags:
+      - organization
+      summary: Create a new organization
+      operationId: createOrganization
+      requestBody:
+        description: Organization object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+  /organizations/{organization_id}/:
+    get:
+      tags:
+      - organization
+      summary: Read organization by id
+      operationId: readOrganizationById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Organization'
+        404:
+          description: Organization not found
+          content: {}
+    put:
+      tags:
+      - organization
+      summary: Update organization by id
+      operationId: updateOrganizationById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      requestBody:
+        description: Organization object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Organization'
+        404:
+          description: Organization not found
+          content: {}
+    delete:
+      tags:
+      - organization
+      summary: Delete organization by id
+      operationId: deleteOrganizationById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/users/:
+    get:
+      tags:
+      - users
+      summary: Read users
+      operationId: readUsers
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        404:
+          description: Organization not found
+          content: {}
+    post:
+      tags:
+      - users
+      summary: Create user
+      operationId: createUser
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      requestBody:
+        description: User object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/users/{user_id}/:
+    get:
+      tags:
+      - users
+      summary: Read user by id
+      operationId: readUserById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/userId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Organization not found
+          content: {}
+    put:
+      tags:
+      - users
+      summary: Update user by id
+      operationId: updateUserById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/userId'
+      requestBody:
+        description: User object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Organization not found
+          content: {}
+    delete:
+      tags:
+      - users
+      summary: Delete user by id
+      operationId: deleteUserById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/userId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/users/{user_id}/tokens/:
+    post:
+      tags:
+      - user tokens
+      summary: Get a new token for user
+      operationId: createUserToken
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - name: user_id
+        in: path
+        description: id of the user
+        required: true
+        schema:
+          type: string
+          example: "user456"
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserToken'
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/users/{user_id}/tokens/{token}/:
+    delete:
+      tags:
+      - user tokens
+      summary: Delete a user token
+      operationId: deleteUserToken
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/token'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/:
+    post:
+      tags:
+      - machines
+      summary: Create a machine
+      operationId: createMachineById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      requestBody:
+        description: Machine object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Machine'
+        required: true
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+    get:
+      tags:
+      - machines
+      summary: Read all machines
+      operationId: readMachines
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Machine'
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/{machine_id}/:
+    get:
+      tags:
+      - machines
+      summary: Read machine
+      operationId: readMachineById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Machine'
+        404:
+          description: Organization not found
+          content: {}
+    put:
+      tags:
+      - machines
+      summary: Update a machine
+      operationId: updateMachineById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      requestBody:
+        description: Machine object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Machine'
+        required: true
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+    delete:
+      tags:
+      - machines
+      summary: Delete a machine
+      operationId: deleteMachineById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/{machine_id}/tokens/:
+    post:
+      tags:
+      - machine tokens
+      summary: Create a machine token
+      operationId: createMachineToken
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineToken'
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/{machine_id}/tokens/{token}/:
+    delete:
+      tags:
+      - machine tokens
+      summary: Revoke a machine token
+      operationId: deleteMachineToken
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      - $ref: '#/components/parameters/token'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/{machine_id}/schedule/:
+    get:
+      tags:
+        - schedule
+      summary: Read a machine's schedule
+      operationId: readMachineSchedule
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        404:
+          description: Organization not found
+          content: {}
+    post:
+      tags:
+        - schedule
+      summary: Create a machine's schedule
+      operationId: createMachineSchedule
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      requestBody:
+        description: Schedule object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+    put:
+      tags:
+        - schedule
+      summary: Update a machine's schedule
+      operationId: updateMachineSchedule
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      requestBody:
+        description: Schedule object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+    delete:
+      tags:
+        - schedule
+      summary: Delete a machine's schedule
+      operationId: deleteMachineSchedule
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/tasks/:
+    get:
+      tags:
+        - tasks
+      summary: Get defined tasks
+      operationId: readAllTasks
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        404:
+          description: Organization not found
+          content: {}
+    post:
+      tags:
+        - tasks
+      summary: Create new task
+      operationId: createTask
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      requestBody:
+        description: Task object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/tasks/{task_id}/:
+    get:
+      tags:
+        - tasks
+      summary: Get task by id
+      operationId: readTaskById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/taskId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        404:
+          description: Organization not found
+          content: {}
+    put:
+      tags:
+        - tasks
+      summary: Update task definition
+      operationId: updateTaskById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/taskId'
+      requestBody:
+        description: Task object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+    delete:
+      tags:
+        - tasks
+      summary: Delete task definition
+      operationId: deleteTaskById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/taskId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/{machine_id}/records/:
+    get:
+      tags:
+      - records
+      summary: Read records produced by machine
+      operationId: readMachineRecords
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Record'
+        404:
+          description: Organization not found
+          content: {}
+    post:
+      tags:
+      - records
+      summary: Create a new record
+      operationId: createMachineRecord
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+  /{organization_id}/machines/{machine_id}/records/{record_id}/:
+    get:
+      tags:
+      - records
+      summary: Read individual machine record
+      operationId: readMachineRecordById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Record'
+        404:
+          description: Organization not found
+          content: {}
+    delete:
+      tags:
+      - records
+      summary: Delete individual machine record
+      operationId: deleteMachineRecordById
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      - $ref: '#/components/parameters/machineId'
+      - $ref: '#/components/parameters/recordId'
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: Organization not found
+          content: {}
+components:
+  schemas:
+    Organization:
+      type: object
+    User:
+      type: object
+    Machine:
+      type: object
+    Task:
+      type: object
+    Schedule:
+      type: object
+    Record:
+      type: object
+    UserToken:
+      type: object
+    MachineToken:
+      type: object
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+  parameters:
+    organizationId:
+      name: organization_id
+      in: path
+      description: id of the organization
+      required: true
+      schema:
+        type: string
+        example: "org123"
+    machineId:
+      name: machine_id
+      in: path
+      description: id of the machine
+      required: true
+      schema:
+        type: string
+        example: "machineXYZ"
+    userId:
+      name: user_id
+      in: path
+      description: id of the user
+      required: true
+      schema:
+        type: string
+        example: "user456"
+    taskId:
+      name: task_id
+      in: path
+      description: id of the task
+      required: true
+      schema:
+        type: string
+        example: "taskABC"
+    recordId:
+      name: record_id
+      in: path
+      description: id of the task
+      required: true
+      schema:
+        type: string
+        example: "record678"
+    token:
+      name: token
+      in: path
+      description: token to revoke
+      required: true
+      schema:
+        type: string
+        example: "f025331f-267d-474a-8a5f-41a1cc1b8fb9"
