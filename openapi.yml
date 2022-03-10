@@ -1,4 +1,5 @@
 openapi: 3.0.3
+
 info:
   title: taskey API
   description: |-
@@ -11,8 +12,12 @@ info:
     name: GNU General Public License
     url: https://raw.githubusercontent.com/LassiHeikkila/taskey/main/LICENSE
   version: 0.1.0
+
 servers:
 - url: http://localhost:8080/api/v1
+
+security:
+  - bearerAuth: []
 
 paths:
   /organizations/:
@@ -21,6 +26,7 @@ paths:
       - organization
       summary: Create a new organization
       operationId: createOrganization
+      security: []
       requestBody:
         description: Organization object that needs to be added
         content:
@@ -280,6 +286,9 @@ paths:
       parameters:
       - $ref: '#/components/parameters/organizationId'
       - $ref: '#/components/parameters/machineId'
+      security:
+      - bearerAuth: []
+      - accessToken: []
       responses:
         200:
           description: successful operation
@@ -369,6 +378,9 @@ paths:
       parameters:
       - $ref: '#/components/parameters/organizationId'
       - $ref: '#/components/parameters/machineId'
+      security:
+      - bearerAuth: []
+      - accessToken: []
       responses:
         200:
           description: successful operation
@@ -441,6 +453,9 @@ paths:
       operationId: readAllTasks
       parameters:
       - $ref: '#/components/parameters/organizationId'
+      security:
+      - bearerAuth: []
+      - accessToken: []
       responses:
         200:
           description: successful operation
@@ -479,6 +494,9 @@ paths:
       parameters:
       - $ref: '#/components/parameters/organizationId'
       - $ref: '#/components/parameters/taskId'
+      security:
+      - bearerAuth: []
+      - accessToken: []
       responses:
         200:
           description: successful operation
@@ -552,6 +570,9 @@ paths:
       parameters:
       - $ref: '#/components/parameters/organizationId'
       - $ref: '#/components/parameters/machineId'
+      security:
+      - bearerAuth: []
+      - accessToken: []
       responses:
         200:
           description: successful operation
@@ -593,6 +614,37 @@ paths:
         404:
           description: Organization not found
           content: {}
+  /auth/:
+    post:
+      tags:
+      - login
+      summary: Get a session token by providing user credentials
+      operationId: loginWithCredentials
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: Valid credentials provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        401:
+          description: Invalid credentials provided
+    get:
+      tags:
+      - login
+      summary: Check if session token is valid
+      operationId: validateToken
+      responses:
+        200:
+          description: Valid session token in request
+        401:
+          description: Invalid session token in request
 components:
   schemas:
     Organization:
@@ -611,20 +663,27 @@ components:
       type: object
     MachineToken:
       type: object
-    ApiResponse:
+    LoginRequest:
       type: object
       properties:
-        code:
-          type: integer
-          format: int32
-        type:
+        username:
           type: string
-        message:
+        password:
           type: string
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          format: jwt
   securitySchemes:
-    api_key:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    accessToken:
       type: apiKey
-      name: api_key
+      name: Authorization
       in: header
   parameters:
     organizationId:
