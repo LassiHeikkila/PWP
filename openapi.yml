@@ -255,6 +255,24 @@ paths:
         501:
           $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/:
+    get:
+      tags:
+      - machines
+      summary: Read all machines
+      operationId: readMachines
+      parameters:
+      - $ref: '#/components/parameters/organizationId'
+      responses:
+        200:
+          $ref: '#/components/responses/MachinesResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     post:
       tags:
       - machines
@@ -272,24 +290,6 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/Success'
-        404:
-          $ref: '#/components/responses/NotFound'
-        501:
-          $ref: '#/components/responses/Unimplemented'
-    get:
-      tags:
-      - machines
-      summary: Read all machines
-      operationId: readMachines
-      parameters:
-      - $ref: '#/components/parameters/organizationId'
-      responses:
-        200:
-          $ref: '#/components/responses/MachinesResponse'
-        401:
-          $ref: '#/components/responses/Unauthenticated'
-        403:
-          $ref: '#/components/responses/Forbidden'
         404:
           $ref: '#/components/responses/NotFound'
         501:
@@ -499,7 +499,7 @@ paths:
     get:
       tags:
         - tasks
-      summary: Get defined tasks
+      summary: Read all defined tasks
       operationId: readAllTasks
       parameters:
       - $ref: '#/components/parameters/organizationId'
