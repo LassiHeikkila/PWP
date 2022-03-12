@@ -76,7 +76,6 @@ func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester 
 	for _, usr := range o.Users {
 		u, err := h.d.ReadUser(usr.Name)
 		if err != nil {
-			_ = encodeNotFoundResponse(w)
 			continue
 		}
 
@@ -271,15 +270,65 @@ func (h *handler) createTask(w http.ResponseWriter, req *http.Request, requester
 }
 
 func (h *handler) readTask(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+	taskID := vars[taskIDKey]
+
+	tsk, err := h.d.ReadTask(taskID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if tsk.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	task := dbconverter.ConvertTask(*tsk)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &task,
+	})
 }
 
 func (h *handler) readTasks(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	tasks := make([]types.Task, 0, len(o.Tasks))
+	for _, tsk := range o.Tasks {
+		t, err := h.d.ReadTask(tsk.Name)
+		if err != nil {
+			continue
+		}
+
+		task := dbconverter.ConvertTask(*t)
+		tasks = append(tasks, task)
+	}
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &tasks,
+	})
 }
 
 func (h *handler) updateTask(w http.ResponseWriter, req *http.Request, requester *types.User) {

@@ -28,3 +28,11 @@ func ConvertMachine(dbmachine db.Machine) types.Machine {
 		Arch:        dbmachine.Arch,
 	}
 }
+
+func ConvertTask(dbtask db.Task) types.Task {
+	return types.Task{
+		Name:        dbtask.Name,
+		Description: dbtask.Description,
+		Content:     dbtask.Content,
+	}
+}

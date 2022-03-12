@@ -13,3 +13,9 @@ type Task struct {
 	Records        []Record    `gorm:"foreignKey:TaskID"`
 	OrganizationID uint        `gorm:"not null"`
 }
+
+func StringToJSON(s string) pgtype.JSON {
+	j := pgtype.JSON{}
+	j.Set(s)
+	return j
+}
