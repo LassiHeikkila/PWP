@@ -36,3 +36,17 @@ func ConvertTask(dbtask db.Task) types.Task {
 		Content:     dbtask.Content,
 	}
 }
+
+func ConvertRecord(dbrecord db.Record) types.Record {
+	return types.Record{
+		MachineName: dbrecord.Machine.Name,
+		TaskName:    dbrecord.Task.Name,
+		ExecutedAt:  dbrecord.ExecutedAt,
+		Status:      dbrecord.Status,
+		Output:      dbrecord.Output,
+	}
+}
+
+func ConvertSchedule(dbschedule db.Schedule) types.Schedule {
+	return types.Schedule{}
+}

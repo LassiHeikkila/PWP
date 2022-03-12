@@ -39,6 +39,10 @@ func encodeUnauthenticatedResponse(w http.ResponseWriter) error {
 	return encodeResponse(w, Response{Code: http.StatusUnauthorized, Message: "unauthorized"})
 }
 
+func encodeBadRequestResponse(w http.ResponseWriter) error {
+	return encodeResponse(w, Response{Code: http.StatusBadRequest, Message: "bad request"})
+}
+
 func encodeUnimplementedResponse(w http.ResponseWriter) error {
 	return encodeResponse(w, Response{Code: http.StatusNotImplemented, Message: "not implemented yet"})
 }

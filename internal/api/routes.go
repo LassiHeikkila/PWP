@@ -79,6 +79,9 @@ func (h *handler) setScheduleRoutesV1() {
 func (h *handler) setRecordRoutesV1() {
 	// create and read records
 	// TODO: this about adding machine member middleware
+	// TODO: also think about adding endpoint where machine can just post record without specifying its own id
+	// e.g. POST /api/v1/{organization_id}/addrecord/
+	// and server will figure out who it came from based on Authorization header
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresMachine(h.addRecord)).Methods(http.MethodPost)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresUser(h.mustBeMember(h.readRecords))).Methods(http.MethodGet)
 
