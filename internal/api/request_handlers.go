@@ -21,38 +21,38 @@ func (h *handler) createOrganization(w http.ResponseWriter, req *http.Request) {
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) updateOrganization(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) updateOrganization(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteOrganization(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteOrganization(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createUser(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createUser(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
 // /api/v1/{organization_id}/users/{user_id}/
-func (h *handler) readUser(w http.ResponseWriter, req *http.Request, caller *types.User) {
+func (h *handler) readUser(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
@@ -84,85 +84,111 @@ func (h *handler) readUser(w http.ResponseWriter, req *http.Request, caller *typ
 	})
 }
 
-func (h *handler) updateUser(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) updateUser(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteUser(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteUser(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createUserToken(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createUserToken(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteUserToken(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteUserToken(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createMachine(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createMachine(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readMachine(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) readMachine(w http.ResponseWriter, req *http.Request, requester *types.User) {
+	defer req.Body.Close()
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+	machineID := vars[machineIDKey]
+
+	m, err := h.d.ReadMachine(machineID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if m.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	machine := dbconverter.ConvertMachine(*m)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &machine,
+	})
+}
+
+func (h *handler) updateMachine(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) updateMachine(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteMachine(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteMachine(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createMachineToken(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createMachineToken(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteMachineToken(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteMachineToken(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createMachineSchedule(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createMachineSchedule(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) readMachineSchedule(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readMachineSchedule(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) updateMachineSchedule(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) updateMachineSchedule(w http.ResponseWriter, req *http.Request, user *types.User) {
-	// TODO: implement
-	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
-}
-
-func (h *handler) deleteMachineSchedule(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteMachineSchedule(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
@@ -174,49 +200,49 @@ func (h *handler) addRecord(w http.ResponseWriter, req *http.Request, machine *t
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) getRecord(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) getRecord(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) getRecords(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) getRecords(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteRecord(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteRecord(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createTask(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createTask(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readTask(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) readTask(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readTasks(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) readTasks(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) updateTask(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) updateTask(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) deleteTask(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) deleteTask(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)

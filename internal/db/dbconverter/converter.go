@@ -13,3 +13,12 @@ func ConvertUser(dbuser db.User) types.User {
 		Role:         dbuser.Role,
 	}
 }
+
+func ConvertMachine(dbmachine db.Machine) types.Machine {
+	return types.Machine{
+		Name:        dbmachine.Name,
+		Description: dbmachine.Description,
+		OS:          dbmachine.OS,
+		Arch:        dbmachine.Arch,
+	}
+}
