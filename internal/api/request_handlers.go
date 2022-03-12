@@ -61,9 +61,34 @@ func (h *handler) createUser(w http.ResponseWriter, req *http.Request, requester
 }
 
 func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	users := make([]types.User, 0, len(o.Users))
+	for _, usr := range o.Users {
+		u, err := h.d.ReadUser(usr.Name)
+		if err != nil {
+			_ = encodeNotFoundResponse(w)
+			continue
+		}
+
+		user := dbconverter.ConvertUser(*u)
+		users = append(users, user)
+	}
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &users,
+	})
 }
 
 // /api/v1/{organization_id}/users/{user_id}/
