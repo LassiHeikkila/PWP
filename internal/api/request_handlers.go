@@ -22,9 +22,24 @@ func (h *handler) createOrganization(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	org := dbconverter.ConvertOrganization(*o)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &org,
+	})
 }
 
 func (h *handler) updateOrganization(w http.ResponseWriter, req *http.Request, requester *types.User) {

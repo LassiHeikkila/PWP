@@ -5,6 +5,12 @@ import (
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
+func ConvertOrganization(dborg db.Organization) types.Organization {
+	return types.Organization{
+		Name: dborg.Name,
+	}
+}
+
 func ConvertUser(dbuser db.User) types.User {
 	return types.User{
 		Name:         dbuser.Name,
