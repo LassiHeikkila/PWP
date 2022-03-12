@@ -50,11 +50,11 @@ func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		user = lookupUserByToken(a.dbController, value)
 	}
 	if user == nil {
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		_ = encodeUnauthenticatedResponse(w)
 		return
 	}
 	if !types.HasRole(user.Role, a.requiredRole) {
-		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		_ = encodeForbiddenResponse(w)
 		return
 	}
 	a.handler(w, r, user)
@@ -90,7 +90,7 @@ func (a *AuthMachineMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		machine = lookupMachineByToken(a.dbController, value)
 	}
 	if machine == nil {
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		_ = encodeUnauthenticatedResponse(w)
 		return
 	}
 	a.handler(w, r, machine)
@@ -123,12 +123,12 @@ func (m *MemberOfOrganizationMW) ServeHTTP(
 
 	org := lookupOrganizationByID(m.dbController, orgID)
 	if org == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		_ = encodeNotFoundResponse(w)
 		return
 	}
 
 	if user.Organization != org.Name {
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		_ = encodeForbiddenResponse(w)
 		return
 	}
 
