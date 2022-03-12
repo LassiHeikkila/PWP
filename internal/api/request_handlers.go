@@ -186,6 +186,12 @@ func (h *handler) readMachine(w http.ResponseWriter, req *http.Request, requeste
 	})
 }
 
+func (h *handler) readMachines(w http.ResponseWriter, req *http.Request, requester *types.User) {
+	// TODO: implement
+	defer req.Body.Close()
+	_ = encodeUnimplementedResponse(w)
+}
+
 func (h *handler) updateMachine(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()

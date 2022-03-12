@@ -54,6 +54,7 @@ func (h *handler) setUserRoutesV1() {
 func (h *handler) setMachineRoutesV1() {
 	// create, read, update and delete machine(s)
 	h.router.Handle("/api/v1/{organization_id}/machines/", h.requiresAdmin(h.mustBeMember(h.createMachine))).Methods(http.MethodPost)
+	h.router.Handle("/api/v1/{organization_id}/machines/", h.requiresAdmin(h.mustBeMember(h.readMachines))).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/", h.requiresAdmin(h.mustBeMember(h.readMachine))).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/", h.requiresAdmin(h.mustBeMember(h.updateMachine))).Methods(http.MethodPut)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/", h.requiresAdmin(h.mustBeMember(h.deleteMachine))).Methods(http.MethodDelete)
