@@ -247,7 +247,7 @@ func TestProcessRequestGetUser(t *testing.T) {
 			ID: 123,
 		},
 		Name: "org123",
-	}, nil)
+	}, nil).Times(2)
 
 	resp, err := client.Do(req)
 	if err != nil {
