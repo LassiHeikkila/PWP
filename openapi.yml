@@ -35,9 +35,8 @@ paths:
               $ref: '#/components/schemas/Organization'
         required: true
       responses:
-        405:
-          description: Invalid input
-          content: {}
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /organizations/{organization_id}/:
     get:
       tags:
@@ -48,14 +47,15 @@ paths:
       - $ref: '#/components/parameters/organizationId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/Organization'
+          $ref: '#/components/responses/OrganizationResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     put:
       tags:
       - organization
@@ -72,14 +72,15 @@ paths:
         required: true
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/Organization'
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     delete:
       tags:
       - organization
@@ -89,10 +90,15 @@ paths:
       - $ref: '#/components/parameters/organizationId'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/users/:
     get:
       tags:
@@ -103,16 +109,15 @@ paths:
       - $ref: '#/components/parameters/organizationId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+          $ref: '#/components/responses/UsersResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     post:
       tags:
       - users
@@ -129,16 +134,15 @@ paths:
         required: true
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/users/{user_id}/:
     get:
       tags:
@@ -150,14 +154,15 @@ paths:
       - $ref: '#/components/parameters/userId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+          $ref: '#/components/responses/UserResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     put:
       tags:
       - users
@@ -174,14 +179,15 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     delete:
       tags:
       - users
@@ -192,10 +198,15 @@ paths:
       - $ref: '#/components/parameters/userId'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/users/{user_id}/tokens/:
     post:
       tags:
@@ -213,14 +224,15 @@ paths:
           example: "user456"
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserToken'
+          $ref: '#/components/responses/UserTokenResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/users/{user_id}/tokens/{token}/:
     delete:
       tags:
@@ -233,10 +245,15 @@ paths:
       - $ref: '#/components/parameters/token'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/:
     post:
       tags:
@@ -254,10 +271,11 @@ paths:
         required: true
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     get:
       tags:
       - machines
@@ -267,16 +285,15 @@ paths:
       - $ref: '#/components/parameters/organizationId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Machine'
+          $ref: '#/components/responses/MachinesResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/:
     get:
       tags:
@@ -291,14 +308,15 @@ paths:
       - accessToken: []
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Machine'
+          $ref: '#/components/responses/MachineResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     put:
       tags:
       - machines
@@ -316,10 +334,15 @@ paths:
         required: true
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     delete:
       tags:
       - machines
@@ -330,10 +353,15 @@ paths:
       - $ref: '#/components/parameters/machineId'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/tokens/:
     post:
       tags:
@@ -345,14 +373,15 @@ paths:
       - $ref: '#/components/parameters/machineId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MachineToken'
+          $ref: '#/components/responses/MachineTokenResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/tokens/{token}/:
     delete:
       tags:
@@ -365,10 +394,15 @@ paths:
       - $ref: '#/components/parameters/token'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/schedule/:
     get:
       tags:
@@ -383,14 +417,15 @@ paths:
       - accessToken: []
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Schedule'
+          $ref: '#/components/responses/ScheduleResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     post:
       tags:
         - schedule
@@ -407,10 +442,15 @@ paths:
               $ref: '#/components/schemas/Schedule'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     put:
       tags:
         - schedule
@@ -427,10 +467,15 @@ paths:
               $ref: '#/components/schemas/Schedule'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     delete:
       tags:
         - schedule
@@ -441,10 +486,15 @@ paths:
       - $ref: '#/components/parameters/machineId'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/tasks/:
     get:
       tags:
@@ -458,14 +508,15 @@ paths:
       - accessToken: []
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
+          $ref: '#/components/responses/TasksResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     post:
       tags:
         - tasks
@@ -481,10 +532,15 @@ paths:
               $ref: '#/components/schemas/Task'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/tasks/{task_id}/:
     get:
       tags:
@@ -499,14 +555,15 @@ paths:
       - accessToken: []
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
+          $ref: '#/components/responses/TaskResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     put:
       tags:
         - tasks
@@ -523,10 +580,11 @@ paths:
               $ref: '#/components/schemas/Task'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     delete:
       tags:
         - tasks
@@ -537,10 +595,15 @@ paths:
       - $ref: '#/components/parameters/taskId'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/records/:
     get:
       tags:
@@ -552,16 +615,15 @@ paths:
       - $ref: '#/components/parameters/machineId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Record'
+          $ref: '#/components/responses/RecordsResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     post:
       tags:
       - records
@@ -575,10 +637,15 @@ paths:
       - accessToken: []
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/records/{record_id}/:
     get:
       tags:
@@ -591,14 +658,15 @@ paths:
       - $ref: '#/components/parameters/recordId'
       responses:
         200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Record'
+          $ref: '#/components/responses/RecordResponse'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     delete:
       tags:
       - records
@@ -610,10 +678,15 @@ paths:
       - $ref: '#/components/parameters/recordId'
       responses:
         200:
-          description: successful operation
+          $ref: '#/components/responses/Success'
+        401:
+          $ref: '#/components/responses/Unauthenticated'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          description: Organization not found
-          content: {}
+          $ref: '#/components/responses/NotFound'
+        501:
+          $ref: '#/components/responses/Unimplemented'
   /auth/:
     post:
       tags:
@@ -628,13 +701,11 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         200:
-          description: Valid credentials provided
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginResponse'
+          $ref: '#/components/responses/LoginResponse'
         401:
-          description: Invalid credentials provided
+          $ref: '#/components/responses/Unauthenticated'
+        501:
+          $ref: '#/components/responses/Unimplemented'
     get:
       tags:
       - login
@@ -642,11 +713,280 @@ paths:
       operationId: validateToken
       responses:
         200:
-          description: Valid session token in request
+          $ref: '#/components/responses/Success'
         401:
-          description: Invalid session token in request
+          $ref: '#/components/responses/Unauthenticated'
+        501:
+          $ref: '#/components/responses/Unimplemented'
 components:
+  responses:
+    Success:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            success:
+              $ref: '#/components/examples/AuthenticatedRequestNoContent'
+    Unauthenticated:
+      description: Request could not be authenticated (invalid or no token in Authorization header)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            unauthenticated:
+              $ref: '#/components/examples/UnauthenticatedRequest'
+    Forbidden:
+      description: Forbidden action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            unauthenticated:
+              $ref: '#/components/examples/Forbidden'
+    NotFound:
+      description: Requested resource could not be found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            notfound:
+              $ref: '#/components/examples/NotFound'
+    Unimplemented:
+      description: Requested endpoint is not implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            notfound:
+              $ref: '#/components/examples/Unimplemented'
+    LoginResponse:
+      description: Login was successful
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/LoginResponse'
+          examples:
+            goodlogin:
+              $ref: '#/components/examples/GoodLogin'
+    OrganizationResponse:
+      description: organization details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/Organization'
+    UserResponse:
+      description: user details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/User'
+    UsersResponse:
+      description: array of user details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+    MachineResponse:
+      description: machine details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/Machine'
+    MachinesResponse:
+      description: array of machine details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Machine'
+    ScheduleResponse:
+      description: schedule details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/Schedule'
+    TaskResponse:
+      description: task details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/Task'
+    TasksResponse:
+      description: array of task details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Task'
+    RecordResponse:
+      description: record details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/Record'
+    RecordsResponse:
+      description: array of record details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Record'
+    UserTokenResponse:
+      description: token details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/UserToken'
+    MachineTokenResponse:
+      description: token details
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - payload
+              properties:
+                payload:
+                  $ref: '#/components/schemas/MachineToken'
+  examples:
+    AuthenticatedRequestNoContent:
+      summary: Request was authenticated and otherwise acceptable
+      value:
+        code: 200
+        msg: "ok"
+    UnauthenticatedRequest:
+      summary: Request could not be authenticated
+      value:
+        code: 401
+        msg: "unauthorized"
+    Forbidden:
+      summary: Request forbidden, user may not have proper role to perform action
+      value:
+        code: 403
+        msg: "forbidden"
+    NotFound:
+      summary: Requested resource not found
+      value:
+        code: 404
+        msg: "not found"
+    Unimplemented:
+      summary: Requested endpoint is not implemented yet
+      value:
+        code: 501
+        msg: "not implemented yet"
+    GoodLogin:
+      summary: Login successful
+      value:
+        code: 200
+        msg: "ok"
+        payload:
+          token: "this would be a JWT"
   schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        msg:
+          type: string
+
     Organization:
       type: object
     User:
