@@ -15,7 +15,7 @@ func (h *handler) signupHandler(w http.ResponseWriter, req *http.Request) {
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createOrganization(w http.ResponseWriter, req *http.Request, user *types.User) {
+func (h *handler) createOrganization(w http.ResponseWriter, req *http.Request) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)

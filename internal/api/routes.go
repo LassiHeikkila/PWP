@@ -19,12 +19,13 @@ const (
 	userIDKey    = "user_id"
 	machineIDKey = "machine_id"
 	recordIDKey  = "record_id"
+	taskIDKey    = "task_id"
 	tokenKey     = "token"
 )
 
 func (h *handler) setOrgRoutesV1() {
 	// create organization
-	h.router.Handle("/api/v1/organizations/", h.requiresRoot(h.createOrganization)).Methods(http.MethodPost)
+	h.router.HandleFunc("/api/v1/organizations/", h.createOrganization).Methods(http.MethodPost)
 	// read organization
 	h.router.Handle("/api/v1/organizations/{organization_id}/", h.requiresAdmin(h.mustBeMember(h.readOrganization))).Methods(http.MethodGet)
 	// update organization
