@@ -989,20 +989,76 @@ components:
 
     Organization:
       type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
     User:
       type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        organization:
+          type: string
+        role:
+          type: integer
+      required:
+        - name
+        - email
+        - organization
+        - role
     Machine:
       type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        os:
+          type: string
+        arch:
+          type: string
+      required:
+        - name
+        - OS
+        - Arch
     Task:
       type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        content:
+          type: object
+      required:
+        - name
+        - content
     Schedule:
       type: object
     Record:
       type: object
+      properties:
+        machineName:
+          type: string
+        taskName:
+          type: string
+        executedAt:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        output:
+          type: string
     UserToken:
-      type: object
+      type: string
+      format: uuid
     MachineToken:
-      type: object
+      type: string
+      format: uuid
     LoginRequest:
       type: object
       properties:
