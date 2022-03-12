@@ -186,9 +186,33 @@ func (h *handler) readMachine(w http.ResponseWriter, req *http.Request, requeste
 }
 
 func (h *handler) readMachines(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	machines := make([]types.Machine, 0, len(o.Machines))
+	for _, m := range o.Machines {
+		mchn, err := h.d.ReadMachine(m.Name)
+		if err != nil {
+			continue
+		}
+
+		machine := dbconverter.ConvertMachine(*mchn)
+		machines = append(machines, machine)
+	}
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &machines,
+	})
 }
 
 func (h *handler) updateMachine(w http.ResponseWriter, req *http.Request, requester *types.User) {
