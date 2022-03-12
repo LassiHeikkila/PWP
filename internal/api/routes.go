@@ -80,12 +80,12 @@ func (h *handler) setRecordRoutesV1() {
 	// create and read records
 	// TODO: this about adding machine member middleware
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresMachine(h.addRecord)).Methods(http.MethodPost)
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresUser(h.mustBeMember(h.getRecords))).Methods(http.MethodGet)
+	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresUser(h.mustBeMember(h.readRecords))).Methods(http.MethodGet)
 
 	// records are immutable so modifying them via PUT is not allowed
 
 	// get and delete a particular record
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/{record_id}/", h.requiresUser(h.mustBeMember(h.getRecord))).Methods(http.MethodGet)
+	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/{record_id}/", h.requiresUser(h.mustBeMember(h.readRecord))).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/{record_id}/", h.requiresAdmin(h.mustBeMember(h.deleteRecord))).Methods(http.MethodDelete)
 }
 

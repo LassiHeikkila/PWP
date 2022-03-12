@@ -269,13 +269,13 @@ func (h *handler) addRecord(w http.ResponseWriter, req *http.Request, machine *t
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) getRecord(w http.ResponseWriter, req *http.Request, requester *types.User) {
+func (h *handler) readRecord(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) getRecords(w http.ResponseWriter, req *http.Request, requester *types.User) {
+func (h *handler) readRecords(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
