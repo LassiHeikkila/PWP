@@ -26,7 +26,7 @@ func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request, req
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
 
 	o, err := h.d.ReadOrganization(orgID)
 	if err != nil {
@@ -66,8 +66,8 @@ func (h *handler) readUser(w http.ResponseWriter, req *http.Request, requester *
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-	userID := vars[userIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
+	userID := sanitizeParameter(vars[userIDKey])
 
 	u, err := h.d.ReadUser(userID)
 	if err != nil {
@@ -98,7 +98,7 @@ func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester 
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
 
 	o, err := h.d.ReadOrganization(orgID)
 	if err != nil {
@@ -158,8 +158,8 @@ func (h *handler) readMachine(w http.ResponseWriter, req *http.Request, requeste
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-	machineID := vars[machineIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
 
 	m, err := h.d.ReadMachine(machineID)
 	if err != nil {
@@ -190,7 +190,7 @@ func (h *handler) readMachines(w http.ResponseWriter, req *http.Request, request
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
 
 	o, err := h.d.ReadOrganization(orgID)
 	if err != nil {
@@ -250,8 +250,8 @@ func (h *handler) readMachineSchedule(w http.ResponseWriter, req *http.Request, 
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-	machineID := vars[machineIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
 
 	m, err := h.d.ReadMachine(machineID)
 	if err != nil {
@@ -306,9 +306,9 @@ func (h *handler) readRecord(w http.ResponseWriter, req *http.Request, requester
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-	machineID := vars[machineIDKey]
-	recordID := vars[recordIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
+	recordID := sanitizeParameter(vars[recordIDKey])
 
 	rid, err := strconv.ParseInt(recordID, 10, 64)
 	if err != nil {
@@ -357,8 +357,8 @@ func (h *handler) readRecords(w http.ResponseWriter, req *http.Request, requeste
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-	machineID := vars[machineIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
 
 	m, err := h.d.ReadMachine(machineID)
 	if err != nil {
@@ -412,8 +412,8 @@ func (h *handler) readTask(w http.ResponseWriter, req *http.Request, requester *
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-	taskID := vars[taskIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
+	taskID := sanitizeParameter(vars[taskIDKey])
 
 	tsk, err := h.d.ReadTask(taskID)
 	if err != nil {
@@ -444,7 +444,7 @@ func (h *handler) readTasks(w http.ResponseWriter, req *http.Request, requester 
 	defer req.Body.Close()
 
 	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
+	orgID := sanitizeParameter(vars[orgIDKey])
 
 	o, err := h.d.ReadOrganization(orgID)
 	if err != nil {
