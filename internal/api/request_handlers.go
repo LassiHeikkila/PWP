@@ -1,11 +1,14 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 
+	"github.com/LassiHeikkila/taskey/internal/db"
 	"github.com/LassiHeikkila/taskey/internal/db/dbconverter"
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
@@ -17,9 +20,23 @@ func (h *handler) signupHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createOrganization(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	var reqOrg types.Organization
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqOrg); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	org := dbconverter.ConvertOrganizationToDB(&reqOrg)
+
+	if err := h.d.CreateOrganization(&org); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request) {
@@ -56,9 +73,34 @@ func (h *handler) deleteOrganization(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createUser(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqUser types.User
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqUser); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	user := dbconverter.ConvertUserToDB(&reqUser)
+	user.OrganizationID = o.ID
+	user.Organization = *o
+
+	if err := h.d.CreateUser(&user); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) readUser(w http.ResponseWriter, req *http.Request) {
@@ -136,9 +178,55 @@ func (h *handler) deleteUser(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createUserToken(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	userID := sanitizeParameter(vars[userIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	u, err := h.d.ReadUser(userID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if u.Organization.ID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	genUUID, err := h.a.GenerateUUID()
+	if err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	// TODO: add option to define token expiration via a body
+	expiration := time.Time{} // zero time means no expiry
+
+	ut := db.UserToken{
+		Value:      db.StringToUUID(genUUID),
+		Expiration: expiration,
+		UserID:     u.ID,
+		User:       *u,
+	}
+
+	if err := h.d.CreateUserToken(&ut); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	returnedToken := dbconverter.ConvertUserToken(&ut)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &returnedToken,
+	})
 }
 
 func (h *handler) deleteUserToken(w http.ResponseWriter, req *http.Request) {
@@ -148,9 +236,33 @@ func (h *handler) deleteUserToken(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createMachine(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqMachine types.Machine
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqMachine); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	machine := dbconverter.ConvertMachineToDB(&reqMachine)
+	machine.OrganizationID = o.ID
+
+	if err := h.d.CreateMachine(&machine); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) readMachine(w http.ResponseWriter, req *http.Request) {
@@ -228,9 +340,55 @@ func (h *handler) deleteMachine(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createMachineToken(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	m, err := h.d.ReadMachine(machineID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if m.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	genUUID, err := h.a.GenerateUUID()
+	if err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	// TODO: add option to define token expiration via a body
+	expiration := time.Time{} // zero time means no expiry
+
+	mt := db.MachineToken{
+		Value:      db.StringToUUID(genUUID),
+		Expiration: expiration,
+		MachineID:  m.ID,
+		Machine:    *m,
+	}
+
+	if err := h.d.CreateMachineToken(&mt); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	returnedToken := dbconverter.ConvertMachineToken(&mt)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &returnedToken,
+	})
 }
 
 func (h *handler) deleteMachineToken(w http.ResponseWriter, req *http.Request) {
@@ -402,9 +560,33 @@ func (h *handler) deleteRecord(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createTask(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqTask types.Task
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqTask); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	task := dbconverter.ConvertTaskToDB(&reqTask)
+	task.OrganizationID = o.ID
+
+	if err := h.d.CreateTask(&task); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) readTask(w http.ResponseWriter, req *http.Request) {

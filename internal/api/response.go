@@ -27,6 +27,10 @@ func encodeSuccess(w http.ResponseWriter) error {
 	return encodeResponse(w, Response{Code: http.StatusOK, Message: "ok"})
 }
 
+func encodeFailure(w http.ResponseWriter) error {
+	return encodeResponse(w, Response{Code: http.StatusInternalServerError, Message: "failure"})
+}
+
 func encodeNotFoundResponse(w http.ResponseWriter) error {
 	return encodeResponse(w, Response{Code: http.StatusNotFound, Message: "not found"})
 }
