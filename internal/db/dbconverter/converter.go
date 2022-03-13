@@ -1,6 +1,8 @@
 package dbconverter
 
 import (
+	"encoding/json"
+
 	"github.com/LassiHeikkila/taskey/internal/db"
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
@@ -48,5 +50,11 @@ func ConvertRecord(dbrecord *db.Record) types.Record {
 }
 
 func ConvertSchedule(dbschedule *db.Schedule) types.Schedule {
-	return types.Schedule{}
+	c := make(map[string]interface{})
+
+	_ = json.Unmarshal(dbschedule.Content.Bytes, &c)
+
+	return types.Schedule{
+		Content: c,
+	}
 }

@@ -247,9 +247,41 @@ func (h *handler) createMachineSchedule(w http.ResponseWriter, req *http.Request
 }
 
 func (h *handler) readMachineSchedule(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+	machineID := vars[machineIDKey]
+
+	m, err := h.d.ReadMachine(machineID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if m.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	sched, err := h.d.ReadSchedule(m.Name)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	schedule := dbconverter.ConvertSchedule(sched)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &schedule,
+	})
 }
 
 func (h *handler) updateMachineSchedule(w http.ResponseWriter, req *http.Request, requester *types.User) {

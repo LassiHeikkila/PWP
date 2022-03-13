@@ -1216,3 +1216,114 @@ func TestProcessRequestGetRecords(t *testing.T) {
 		t.Fatal("response not 200:", response)
 	}
 }
+
+func TestProcessRequestGetMachineSchedule(t *testing.T) {
+	ctrl := gomock.NewController(t)
+
+	a := mock_auth.NewMockController(ctrl)
+	d := mock_db.NewMockController(ctrl)
+	h := NewHandler(a, d)
+	if h == nil {
+		t.Fatal("nil handler created")
+	}
+
+	if err := h.RegisterUserHandlers(); err != nil {
+		t.Fatal("error registering user handlers:", err)
+	}
+	if err := h.RegisterOrganizationHandlers(); err != nil {
+		t.Fatal("error registering organization handlers:", err)
+	}
+	if err := h.RegisterMachineHandlers(); err != nil {
+		t.Fatal("error registering machine handlers:", err)
+	}
+	if err := h.RegisterTaskHandlers(); err != nil {
+		t.Fatal("error registering task handlers:", err)
+	}
+	if err := h.RegisterScheduleHandlers(); err != nil {
+		t.Fatal("error registering schedule handlers:", err)
+	}
+	if err := h.RegisterAuthenticationHandlers(); err != nil {
+		t.Fatal("error registering authentication handlers:", err)
+	}
+	if err := h.RegisterRecordHandlers(); err != nil {
+		t.Fatal("error registering record handlers:", err)
+	}
+
+	server := httptest.NewServer(h)
+
+	if server == nil {
+		t.Fatal("failed to create test server")
+	}
+
+	client := http.DefaultClient
+	req, _ := http.NewRequest(http.MethodGet, server.URL+"/api/v1/org123/machines/machineXYZ/schedule/", nil)
+	req.Header.Set("Authorization", "Bearer my test key")
+
+	a.EXPECT().ValidateUserToken(
+		"my test key",
+		gomock.Any(),
+		gomock.Any(),
+		gomock.Any(),
+	).DoAndReturn(func(tokenString string, user *string, organization *string, role *int) bool {
+		if tokenString != "my test key" {
+			return false
+		}
+		if user != nil {
+			*user = "user456"
+		}
+		if organization != nil {
+			*organization = "org123"
+		}
+		if role != nil {
+			*role = int(types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot)
+		}
+		return true
+	})
+
+	machineXYZ := db.Machine{
+		Model: gorm.Model{
+			ID: 678,
+		},
+		Name:           "machineXYZ",
+		Description:    "test machine",
+		OS:             "linux",
+		Arch:           "amd64",
+		OrganizationID: 123,
+	}
+
+	scheduleXYZ := db.Schedule{
+		MachineID: 678,
+		Machine:   machineXYZ,
+		Content:   db.StringToJSON(`{"key":"some content, schedule schema isn't defined yet. it's just arbitrary JSON."}`),
+	}
+
+	d.EXPECT().ReadMachine("machineXYZ").Return(&machineXYZ, nil)
+	d.EXPECT().ReadSchedule("machineXYZ").Return(&scheduleXYZ, nil)
+	d.EXPECT().ReadOrganization("org123").Return(&db.Organization{
+		Model: gorm.Model{
+			ID: 123,
+		},
+		Name: "org123",
+	}, nil).Times(2)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatal("error doing request:", err)
+	}
+	defer resp.Body.Close()
+
+	var response Response
+	b, _ := io.ReadAll(resp.Body)
+
+	if len(b) == 0 {
+		t.Fatal("nothing returned in response")
+	}
+
+	if err := json.Unmarshal(b, &response); err != nil {
+		t.Fatal("failed to decode response as JSON: \"", err, "\", response was: \"", string(b), "\"")
+	}
+
+	if response.Code != 200 {
+		t.Fatal("response not 200:", response)
+	}
+}
