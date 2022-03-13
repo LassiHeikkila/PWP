@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -19,6 +20,8 @@ const (
 	postgresPort = 5432
 	postgresUser = "postgres"
 	postgresPw   = "test1234"
+
+	httpPort = 8081
 )
 
 func main() {
@@ -109,12 +112,20 @@ func run(ctx context.Context) int {
 		log.Println("failed to register signup routes!")
 		return 1
 	}
+	if err := h.RegisterExtraRoute("/swagger/", ServeSwaggerUI); err != nil {
+		log.Println("failed to register swagger UI route!")
+		return 2
+	}
+	if err := h.RegisterExtraRoute("/swagger/openapi.yml", ServeOpenAPI); err != nil {
+		log.Println("failed to register openapi route!")
+		return 2
+	}
 
 	log.Println("API handler initialized")
 
 	srv := &http.Server{
 		Handler:      h,
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%d", httpPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

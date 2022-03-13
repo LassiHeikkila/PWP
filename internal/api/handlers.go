@@ -84,3 +84,8 @@ func (h *handler) RegisterSignUpHandlers() error {
 	h.setSignUpRoutesV1()
 	return nil
 }
+
+func (h *handler) RegisterExtraRoute(path string, handlerFunc func(http.ResponseWriter, *http.Request)) error {
+	h.router.HandleFunc(path, handlerFunc)
+	return nil
+}

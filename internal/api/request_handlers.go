@@ -82,7 +82,8 @@ func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) updateOrganization(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
+	// TODO: implement when / if organization has more details than name
+	// with just name property, it doesn't make sense to implement anything
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
@@ -201,9 +202,44 @@ func (h *handler) readUsers(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) updateUser(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	userID := sanitizeParameter(vars[userIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	u, err := h.d.ReadUser(userID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if u.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqUser types.User
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqUser); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	u.Name = reqUser.Name
+	u.Email = reqUser.Email
+	u.Role = reqUser.Role
+
+	if err := h.d.UpdateUser(u); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) deleteUser(w http.ResponseWriter, req *http.Request) {
@@ -564,9 +600,48 @@ func (h *handler) readMachineSchedule(w http.ResponseWriter, req *http.Request) 
 }
 
 func (h *handler) updateMachineSchedule(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
+
+	m, err := h.d.ReadMachine(machineID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if m.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqSched types.Schedule
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqSched); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	sched, err := h.d.ReadSchedule(m.Name)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	schedule := dbconverter.ConvertSchedule(sched)
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &schedule,
+	})
 }
 
 func (h *handler) deleteMachineSchedule(w http.ResponseWriter, req *http.Request) {
