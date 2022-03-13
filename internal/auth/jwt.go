@@ -16,6 +16,7 @@ type Controller interface {
 	CreateJWT(claims jwt.Claims) (string, error)
 	ValidateUserToken(tokenString string, user *string, organization *string, role *int) bool
 	ValidateMachineToken(tokenString string, machine *string, organization *string) bool
+	GenerateUUID() (string, error)
 }
 
 type authController struct {
