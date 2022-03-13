@@ -20,12 +20,6 @@ func TestAuthenticatedUserMiddleware(t *testing.T) {
 	a := mock_auth.NewMockController(ctrl)
 	d := mock_db.NewMockController(ctrl)
 
-	expectedUser := &types.User{
-		Name:         "Lassi",
-		Email:        "lassi@example.com",
-		Organization: "example.com",
-		Role:         types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
-	}
 	expectedUserToken := &db.UserToken{
 		User: db.User{
 			Name:  "Lassi",
@@ -39,14 +33,12 @@ func TestAuthenticatedUserMiddleware(t *testing.T) {
 	d.EXPECT().ReadUserToken(db.StringToUUID(`cf6525ce-9fbb-4cd1-a1f1-d96f4220b3d2`)).Return(expectedUserToken, nil)
 
 	called := false
-	var calledWithUser *types.User
 
-	next := AuthenticatedUserHandler(func(w http.ResponseWriter, req *http.Request, user *types.User) {
+	next := func(w http.ResponseWriter, req *http.Request) {
 		called = true
-		calledWithUser = user
 
-		w.Write([]byte(`ok`))
-	})
+		_, _ = w.Write([]byte(`ok`))
+	}
 
 	mw := NewAuthUserMiddleware(next, a, d, types.RoleUser)
 
@@ -58,7 +50,6 @@ func TestAuthenticatedUserMiddleware(t *testing.T) {
 	if !called {
 		t.Fatal("next not called")
 	}
-	require.Equal(t, expectedUser, calledWithUser)
 }
 
 func TestAuthenticatedMachineMiddleware(t *testing.T) {

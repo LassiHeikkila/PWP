@@ -12,8 +12,9 @@ import (
 
 // AuthUserMW implements middleware pattern.
 // It should be chained to match routes requiring a specific role.
+// It also checks that caller is a member of the organization owning the resource
 type AuthUserMW struct {
-	handler AuthenticatedUserHandler
+	handler func(http.ResponseWriter, *http.Request)
 
 	authController auth.Controller
 	dbController   db.Controller
@@ -21,7 +22,7 @@ type AuthUserMW struct {
 }
 
 func NewAuthUserMiddleware(
-	next AuthenticatedUserHandler,
+	next func(http.ResponseWriter, *http.Request),
 	authController auth.Controller,
 	dbController db.Controller,
 	requiredRole types.Role,
@@ -34,9 +35,9 @@ func NewAuthUserMiddleware(
 	}
 }
 
-func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// check that token is valid, contains a legit user & organization, and role is what is required
-	scheme, value := auth.GetAuthenticationSchemeAndValue(r.Header.Get("Authorization"))
+	scheme, value := auth.GetAuthenticationSchemeAndValue(req.Header.Get("Authorization"))
 	var user *types.User
 	if scheme == auth.AuthenticationSchemeBearer {
 		// validate token and read user info from it,
@@ -53,11 +54,29 @@ func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		_ = encodeUnauthenticatedResponse(w)
 		return
 	}
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	if orgID != "" {
+		// path contains organization_id,
+		// so we need to check that the caller is a member of that organization
+		org := lookupOrganizationByID(a.dbController, orgID)
+		if org == nil {
+			_ = encodeNotFoundResponse(w)
+			return
+		}
+
+		if user.Organization != org.Name {
+			_ = encodeForbiddenResponse(w)
+			return
+		}
+	}
+
 	if !types.HasRole(user.Role, a.requiredRole) {
 		_ = encodeForbiddenResponse(w)
 		return
 	}
-	a.handler(w, r, user)
+	a.handler(w, req)
 }
 
 type AuthMachineMW struct {
@@ -96,66 +115,22 @@ func (a *AuthMachineMW) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.handler(w, r, machine)
 }
 
-// should be used when accessing resources belonging to an organization
-type MemberOfOrganizationMW struct {
-	handler AuthenticatedUserHandler
-
-	dbController db.Controller
-}
-
-func NewMemberOfOrganizationMW(
-	next AuthenticatedUserHandler,
-	dbController db.Controller,
-) *MemberOfOrganizationMW {
-	return &MemberOfOrganizationMW{
-		handler:      next,
-		dbController: dbController,
-	}
-}
-
-func (m *MemberOfOrganizationMW) ServeHTTP(
-	w http.ResponseWriter,
-	req *http.Request,
-	user *types.User,
-) {
-	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-
-	org := lookupOrganizationByID(m.dbController, orgID)
-	if org == nil {
-		_ = encodeNotFoundResponse(w)
-		return
-	}
-
-	if user.Organization != org.Name {
-		_ = encodeForbiddenResponse(w)
-		return
-	}
-
-	m.handler(w, req, user)
-}
-
-func (h *handler) requiresAdmin(next AuthenticatedUserHandler) http.Handler {
+func (h *handler) requiresAdmin(next func(http.ResponseWriter, *http.Request)) http.Handler {
 	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleAdministrator)
 }
 
-func (h *handler) requiresMaintainer(next AuthenticatedUserHandler) http.Handler {
+func (h *handler) requiresMaintainer(next func(http.ResponseWriter, *http.Request)) http.Handler {
 	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleMaintainer)
 }
 
-func (h *handler) requiresRoot(next AuthenticatedUserHandler) http.Handler {
+func (h *handler) requiresRoot(next func(http.ResponseWriter, *http.Request)) http.Handler {
 	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleRoot)
 }
 
-func (h *handler) requiresUser(next AuthenticatedUserHandler) http.Handler {
+func (h *handler) requiresUser(next func(http.ResponseWriter, *http.Request)) http.Handler {
 	return NewAuthUserMiddleware(next, h.a, h.d, types.RoleUser)
 }
 
 func (h *handler) requiresMachine(next AuthenticatedMachineHandler) http.Handler {
 	return NewAuthMachineMiddleware(next, h.a, h.d)
-}
-
-func (h *handler) mustBeMember(next AuthenticatedUserHandler) AuthenticatedUserHandler {
-	mw := NewMemberOfOrganizationMW(next, h.d)
-	return mw.ServeHTTP
 }
