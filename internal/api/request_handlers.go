@@ -904,9 +904,45 @@ func (h *handler) readTasks(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) updateTask(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	taskID := sanitizeParameter(vars[taskIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	t, err := h.d.ReadTask(taskID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+	if t.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqTask types.Task
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqTask); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	t.Name = reqTask.Name
+	t.Description = reqTask.Description
+	b, _ := json.Marshal(&reqTask.Content)
+	t.Content = db.StringToJSON(string(b))
+
+	if err := h.d.UpdateTask(t); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) deleteTask(w http.ResponseWriter, req *http.Request) {

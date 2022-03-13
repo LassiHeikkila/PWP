@@ -112,11 +112,11 @@ func run(ctx context.Context) int {
 		log.Println("failed to register signup routes!")
 		return 1
 	}
-	if err := h.RegisterExtraRoute("/swagger/", ServeSwaggerUI); err != nil {
+	if err := h.RegisterExtraRoute("/api/v1/", ServeSwaggerUI); err != nil {
 		log.Println("failed to register swagger UI route!")
 		return 2
 	}
-	if err := h.RegisterExtraRoute("/swagger/openapi.yml", ServeOpenAPI); err != nil {
+	if err := h.RegisterExtraRoute("/api/v1/openapi.yml", ServeOpenAPI); err != nil {
 		log.Println("failed to register openapi route!")
 		return 2
 	}
