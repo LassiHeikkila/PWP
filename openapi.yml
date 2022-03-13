@@ -1039,6 +1039,11 @@ components:
         - content
     Schedule:
       type: object
+      properties:
+        content:
+          type: object
+      required:
+      - content
     Record:
       type: object
       properties:

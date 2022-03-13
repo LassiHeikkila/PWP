@@ -1,5 +1,5 @@
 package types
 
-type MachineToken struct{}
+type MachineToken string
 
-type UserToken struct{}
+type UserToken string

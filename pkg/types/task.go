@@ -1,7 +1,7 @@
 package types
 
 type Task struct {
-	Name        string
-	Description string
-	Content     interface{}
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Content     interface{} `json:"content"`
 }

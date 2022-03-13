@@ -1,5 +1,5 @@
 package types
 
 type Organization struct {
-	Name string
+	Name string `json:"name"`
 }

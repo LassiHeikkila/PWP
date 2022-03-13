@@ -1,5 +1,5 @@
 package types
 
 type Schedule struct {
-	Content map[string]interface{}
+	Content map[string]interface{} `json:"content"`
 }

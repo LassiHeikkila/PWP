@@ -1,8 +1,8 @@
 package types
 
 type Machine struct {
-	Name        string
-	Description string
-	OS          string
-	Arch        string
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	OS          string `json:"os"`
+	Arch        string `json:"arch"`
 }
