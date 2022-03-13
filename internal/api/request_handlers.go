@@ -309,10 +309,11 @@ func (h *handler) readRecord(w http.ResponseWriter, req *http.Request, requester
 	for i := range r {
 		rec := r[i]
 		if int64(rec.ID) == rid {
+			record := dbconverter.ConvertRecord(rec)
 			_ = encodeResponse(w, Response{
 				Code:    http.StatusOK,
 				Message: "ok",
-				Payload: &rec,
+				Payload: &record,
 			})
 			return
 		}
