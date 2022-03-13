@@ -58,13 +58,13 @@ func (h *handler) setMachineRoutesV1() {
 
 func (h *handler) setScheduleRoutesV1() {
 	// create, read, update or delete machine schedule
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.createMachineSchedule)).Methods(http.MethodPost)
+	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresMaintainer(h.createMachineSchedule)).Methods(http.MethodPost)
 	// TODO: think about how to route this so machine can also get their own schedule
 	// or should there be a separate endpoint like /api/v1/{organization_id}/machines/self/schedule/
 	// and handler will identify machine based on token ?
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.readMachineSchedule)).Methods(http.MethodGet)
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.updateMachineSchedule)).Methods(http.MethodPut)
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.deleteMachineSchedule)).Methods(http.MethodDelete)
+	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresMaintainer(h.updateMachineSchedule)).Methods(http.MethodPut)
+	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresMaintainer(h.deleteMachineSchedule)).Methods(http.MethodDelete)
 }
 
 func (h *handler) setRecordRoutesV1() {
@@ -85,11 +85,11 @@ func (h *handler) setRecordRoutesV1() {
 
 func (h *handler) setTaskRoutesV1() {
 	// create, read, update and delete tasks
-	h.router.Handle("/api/v1/{organization_id}/tasks/", h.requiresUser(h.createTask)).Methods(http.MethodPost)
+	h.router.Handle("/api/v1/{organization_id}/tasks/", h.requiresMaintainer(h.createTask)).Methods(http.MethodPost)
 	h.router.Handle("/api/v1/{organization_id}/tasks/", h.requiresUser(h.readTasks)).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresUser(h.readTask)).Methods(http.MethodGet)
-	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresUser(h.updateTask)).Methods(http.MethodPut)
-	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresUser(h.deleteTask)).Methods(http.MethodDelete)
+	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresMaintainer(h.updateTask)).Methods(http.MethodPut)
+	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresMaintainer(h.deleteTask)).Methods(http.MethodDelete)
 	// TODO: this about how machines will retrieve task definitions
 }
 
