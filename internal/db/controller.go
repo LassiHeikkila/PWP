@@ -50,6 +50,7 @@ type Controller interface {
 	DeleteMachineToken(value pgtype.UUID) error
 	DeleteLoginInfo(username string) error
 	DeleteRecords(machineName string) error
+	DeleteRecord(machineName string, recordID uint) error
 }
 
 type controller struct {
@@ -608,6 +609,23 @@ func (c *controller) DeleteRecords(machineName string) error {
 	}
 
 	res := c.db.Where(`machine_id = ?`, machine.ID).Delete(&Record{})
+	if err := res.Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *controller) DeleteRecord(machineName string, recordID uint) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	machine, err := c.ReadMachine(machineName)
+	if err != nil {
+		return err
+	}
+
+	res := c.db.Where(`machine_id = ? and id = ?`, machine.ID, recordID).Delete(&Record{})
 	if err := res.Error; err != nil {
 		return err
 	}

@@ -217,6 +217,20 @@ func (mr *MockControllerMockRecorder) DeleteOrganization(arg0 interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOrganization", reflect.TypeOf((*MockController)(nil).DeleteOrganization), arg0)
 }
 
+// DeleteRecord mocks base method.
+func (m *MockController) DeleteRecord(arg0 string, arg1 uint) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRecord", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRecord indicates an expected call of DeleteRecord.
+func (mr *MockControllerMockRecorder) DeleteRecord(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRecord", reflect.TypeOf((*MockController)(nil).DeleteRecord), arg0, arg1)
+}
+
 // DeleteRecords mocks base method.
 func (m *MockController) DeleteRecords(arg0 string) error {
 	m.ctrl.T.Helper()

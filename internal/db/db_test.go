@@ -218,6 +218,13 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 	record.TaskID = task.ID
+	record2 := Record{
+		MachineID:  machine.ID,
+		TaskID:     task.ID,
+		ExecutedAt: time.Now(),
+		Status:     3,
+		Output:     "failed",
+	}
 
 	t.Run("test user token creation", func(t *testing.T) {
 		err := c.CreateUserToken(&userToken)
@@ -237,6 +244,10 @@ func TestDBIntegration(t *testing.T) {
 		err := c.CreateRecord(&record)
 		if err != nil {
 			t.Fatal("error creating Record:", err)
+		}
+		err = c.CreateRecord(&record2)
+		if err != nil {
+			t.Fatal("error creating Record 2:", err)
 		}
 	})
 
@@ -452,7 +463,14 @@ func TestDBIntegration(t *testing.T) {
 		}
 	})
 
-	// delete records before machne, otherwise won't be able to find the records with machine name
+	// delete records before machine, otherwise won't be able to find the records with machine name
+	t.Run("delete individual machine record", func(t *testing.T) {
+		err := c.DeleteRecord(machine.Name, record2.ID)
+		if err != nil {
+			t.Fatal("error deleting machine Record:", err)
+		}
+	})
+
 	t.Run("delete machine records", func(t *testing.T) {
 		err := c.DeleteRecords(machine.Name)
 		if err != nil {
