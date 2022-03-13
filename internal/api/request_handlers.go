@@ -674,7 +674,7 @@ func (h *handler) deleteMachineSchedule(w http.ResponseWriter, req *http.Request
 	_ = encodeSuccess(w)
 }
 
-func (*handler) addRecord(w http.ResponseWriter, req *http.Request, machine *types.Machine) {
+func (*handler) addRecord(w http.ResponseWriter, req *http.Request, _ *types.Machine) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
