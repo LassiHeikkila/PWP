@@ -301,6 +301,20 @@ func (mr *MockControllerMockRecorder) DeleteUserToken(arg0 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserToken", reflect.TypeOf((*MockController)(nil).DeleteUserToken), arg0)
 }
 
+// LoadModel mocks base method.
+func (m *MockController) LoadModel(arg0 interface{}, arg1 uint) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LoadModel", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LoadModel indicates an expected call of LoadModel.
+func (mr *MockControllerMockRecorder) LoadModel(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoadModel", reflect.TypeOf((*MockController)(nil).LoadModel), arg0, arg1)
+}
+
 // ReadLoginInfo mocks base method.
 func (m *MockController) ReadLoginInfo(arg0 string) (*db.LoginInfo, error) {
 	m.ctrl.T.Helper()

@@ -22,12 +22,10 @@ func TestAuthenticatedUserMiddleware(t *testing.T) {
 
 	expectedUserToken := &db.UserToken{
 		User: db.User{
-			Name:  "Lassi",
-			Email: "lassi@example.com",
-			Organization: db.Organization{
-				Name: "example.com",
-			},
-			Role: types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+			Name:           "Lassi",
+			Email:          "lassi@example.com",
+			OrganizationID: 123,
+			Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
 		},
 	}
 	d.EXPECT().ReadUserToken(db.StringToUUID(`cf6525ce-9fbb-4cd1-a1f1-d96f4220b3d2`)).Return(expectedUserToken, nil)

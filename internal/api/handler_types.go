@@ -6,5 +6,5 @@ import (
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
-type AuthenticatedUserHandler func(http.ResponseWriter, *http.Request, *types.User)
+//type AuthenticatedUserHandler func(http.ResponseWriter, *http.Request, *types.User)
 type AuthenticatedMachineHandler func(http.ResponseWriter, *http.Request, *types.Machine)

@@ -172,6 +172,7 @@ func TestDBIntegration(t *testing.T) {
 	})
 	userToken.UserID = user.ID
 	loginInfo.UserID = user.ID
+	loginInfo.User = user
 	org.Users = append(org.Users, user)
 
 	t.Run("test login account creation", func(t *testing.T) {

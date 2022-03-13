@@ -234,6 +234,13 @@ func TestProcessRequestGetOrganization(t *testing.T) {
 		},
 		Name: "org123",
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		OrganizationID: 123,
+	}, nil).Times(1)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -327,14 +334,8 @@ func TestProcessRequestGetUser(t *testing.T) {
 		Name:           "user456",
 		Email:          "lassi@example.com",
 		OrganizationID: 123,
-		Organization: db.Organization{
-			Model: gorm.Model{
-				ID: 123,
-			},
-			Name: "org123",
-		},
-		Role: types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
-	}, nil)
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil).Times(2)
 	d.EXPECT().ReadOrganization("org123").Return(&db.Organization{
 		Model: gorm.Model{
 			ID: 123,
@@ -434,13 +435,7 @@ func TestProcessRequestGetUsers(t *testing.T) {
 		Name:           "user456",
 		Email:          "lassi@example.com",
 		OrganizationID: 123,
-		Organization: db.Organization{
-			Model: gorm.Model{
-				ID: 123,
-			},
-			Name: "org123",
-		},
-		Role: types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
 	}
 	user567 := db.User{
 		Model: gorm.Model{
@@ -449,17 +444,11 @@ func TestProcessRequestGetUsers(t *testing.T) {
 		Name:           "user567",
 		Email:          "totallynotlassi@example.com",
 		OrganizationID: 123,
-		Organization: db.Organization{
-			Model: gorm.Model{
-				ID: 123,
-			},
-			Name: "org123",
-		},
-		Role: types.RoleUser | types.RoleMaintainer,
+		Role:           types.RoleUser | types.RoleMaintainer,
 	}
 
-	d.EXPECT().ReadUser("user456").Return(&user456, nil)
-	d.EXPECT().ReadUser("user567").Return(&user567, nil)
+	d.EXPECT().ReadUser("user456").Return(&user456, nil).Times(2)
+	d.EXPECT().ReadUser("user567").Return(&user567, nil).Times(1)
 	d.EXPECT().ReadOrganization("org123").Return(&db.Organization{
 		Model: gorm.Model{
 			ID: 123,
@@ -572,6 +561,15 @@ func TestProcessRequestGetMachine(t *testing.T) {
 		},
 		Name: "org123",
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -691,6 +689,15 @@ func TestProcessRequestGetMachines(t *testing.T) {
 			machineUVW,
 		},
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -792,6 +799,15 @@ func TestProcessRequestGetTask(t *testing.T) {
 		},
 		Name: "org123",
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -906,6 +922,15 @@ func TestProcessRequestGetTasks(t *testing.T) {
 		Name:  "org123",
 		Tasks: []db.Task{task1234, task5678},
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -1048,6 +1073,15 @@ func TestProcessRequestGetRecord(t *testing.T) {
 		},
 		Name: "org123",
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	d.EXPECT().ReadMachine("machineXYZ").Return(&machineXYZ, nil)
 
@@ -1192,6 +1226,15 @@ func TestProcessRequestGetRecords(t *testing.T) {
 		},
 		Name: "org123",
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	d.EXPECT().ReadMachine("machineXYZ").Return(&machineXYZ, nil)
 
@@ -1305,6 +1348,15 @@ func TestProcessRequestGetMachineSchedule(t *testing.T) {
 		},
 		Name: "org123",
 	}, nil).Times(2)
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil)
 
 	resp, err := client.Do(req)
 	if err != nil {

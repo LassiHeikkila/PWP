@@ -39,8 +39,8 @@ type machineClaims struct {
 }
 
 func NewController(key []byte) *authController {
-	if key == nil {
-		const desiredLength = 256
+	if len(key) == 0 {
+		const desiredLength = 32 // 32 bytes == 256 bits
 		key = make([]byte, desiredLength)
 		n, err := rand.Read(key)
 		if err != nil {

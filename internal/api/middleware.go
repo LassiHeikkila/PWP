@@ -60,13 +60,19 @@ func (a *AuthUserMW) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if orgID != "" {
 		// path contains organization_id,
 		// so we need to check that the caller is a member of that organization
-		org := lookupOrganizationByID(a.dbController, orgID)
-		if org == nil {
+		org, err := a.dbController.ReadOrganization(orgID)
+		if err != nil {
 			_ = encodeNotFoundResponse(w)
 			return
 		}
 
-		if user.Organization != org.Name {
+		usr, err := a.dbController.ReadUser(user.Name)
+		if err != nil {
+			_ = encodeNotFoundResponse(w)
+			return
+		}
+
+		if usr.OrganizationID != org.ID {
 			_ = encodeForbiddenResponse(w)
 			return
 		}

@@ -9,6 +9,7 @@ import (
 )
 
 type Controller interface {
+	LoadModel(model interface{}, id uint) error
 	// CRUD
 	// Create
 	CreateUser(*User) error
@@ -73,6 +74,19 @@ var (
 	unimplemented = dbError("unimplemented")
 	noDB          = dbError("no db connection")
 )
+
+func (c *controller) LoadModel(model interface{}, id uint) error {
+	if c == nil || c.db == nil {
+		return noDB
+	}
+
+	res := c.db.First(model, id)
+	if err := res.Error; err != nil {
+		log.Println("error loading model:", err)
+		return err
+	}
+	return nil
+}
 
 func (c *controller) CreateUser(user *User) error {
 	if c == nil || c.db == nil {

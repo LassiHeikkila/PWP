@@ -20,9 +20,8 @@ func lookupUserByJWT(authController auth.Controller, token string) *types.User {
 		return nil
 	}
 	return &types.User{
-		Name:         user,
-		Organization: organization,
-		Role:         types.Role(role),
+		Name: user,
+		Role: types.Role(role),
 	}
 }
 
@@ -36,11 +35,11 @@ func lookupUserByToken(dbController db.Controller, token string) *types.User {
 	if err != nil {
 		return nil
 	}
+
 	return &types.User{
-		Name:         r.User.Name,
-		Email:        r.User.Email,
-		Organization: r.User.Organization.Name,
-		Role:         r.User.Role,
+		Name:  r.User.Name,
+		Email: r.User.Email,
+		Role:  r.User.Role,
 	}
 }
 
