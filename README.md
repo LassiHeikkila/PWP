@@ -10,3 +10,11 @@
 * Student 1. Lassi Heikkila (Lassi.Heikkila@student.oulu.fi)
 
 __Remember to include all required documentation and HOWTOs, including how to create and populate the database, how to run and test the API, the url to the entrypoint and instructions on how to setup and run the client__
+
+# Running the server
+If you have Go installed locally, you can simply run `go run ./cmd/taskey/` at the root of the repository to start the server.
+
+You must have a running PostgreSQL server on your localhost, e.g. in a Docker container.
+
+# Running tests
+If you have Go installed locally, you can simply run `go test -v ./...` at the root of the repository to execute all tests.
