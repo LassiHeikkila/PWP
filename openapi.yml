@@ -1120,8 +1120,8 @@ components:
       description: id of the task
       required: true
       schema:
-        type: string
-        example: "record678"
+        type: integer
+        example: 678
     token:
       name: token
       in: path
@@ -1129,4 +1129,5 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
         example: "f025331f-267d-474a-8a5f-41a1cc1b8fb9"
