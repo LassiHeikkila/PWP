@@ -20,21 +20,23 @@ security:
   - bearerAuth: []
 
 paths:
-  /organizations/:
+  /signup/:
     post:
       tags:
-      - organization
-      summary: Create a new organization
-      operationId: createOrganization
-      security: []
+      - signup
+      summary: Initialize a new organization with a single root user
+      operationId: initializeOrganization
       requestBody:
-        description: Organization object that needs to be added
+        description: Details for creating organization
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
-        required: true
+              $ref: '#/components/schemas/SignUp'
       responses:
+        200:
+          $ref: '#/components/responses/OrgCreated'
+        409:
+          $ref: '#/components/responses/Conflict'
         501:
           $ref: '#/components/responses/Unimplemented'
   /organizations/{organization_id}/:
@@ -141,6 +143,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
         501:
           $ref: '#/components/responses/Unimplemented'
   /{organization_id}/users/{user_id}/:
@@ -292,6 +296,8 @@ paths:
           $ref: '#/components/responses/Success'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
         501:
           $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/:
@@ -449,6 +455,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
         501:
           $ref: '#/components/responses/Unimplemented'
     put:
@@ -539,6 +547,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
         501:
           $ref: '#/components/responses/Unimplemented'
   /{organization_id}/tasks/{task_id}/:
@@ -756,6 +766,15 @@ components:
           examples:
             notfound:
               $ref: '#/components/examples/NotFound'
+    Conflict:
+      description: Resource with same ID or name already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            conflict:
+              $ref: '#/components/examples/Conflict'
     Unimplemented:
       description: Requested endpoint is not implemented
       content:
@@ -945,6 +964,22 @@ components:
               properties:
                 payload:
                   $ref: '#/components/schemas/MachineToken'
+    OrgCreated:
+      description: Organization was created successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/ApiResponse'
+            - type: object
+              required:
+              - organization
+              - user
+              properties:
+                organization:
+                  $ref: '#/components/schemas/Organization'
+                user:
+                  $ref: '#/components/schemas/User'
   examples:
     AuthenticatedRequestNoContent:
       summary: Request was authenticated and otherwise acceptable
@@ -966,6 +1001,11 @@ components:
       value:
         code: 404
         msg: "not found"
+    Conflict:
+      summary: Resource with same name or ID already exists
+      value:
+        code: 409
+        msg: "conflict"
     Unimplemented:
       summary: Requested endpoint is not implemented yet
       value:
@@ -991,6 +1031,24 @@ components:
       required:
       - code
       - msg
+    SignUp:
+      type: object
+      properties:
+        orgName:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - orgName
+        - username
+        - email
+        - password
     Organization:
       type: object
       properties:
@@ -1005,6 +1063,7 @@ components:
           type: string
         email:
           type: string
+          format: email
         organization:
           type: string
         role:
@@ -1075,6 +1134,7 @@ components:
           type: string
         password:
           type: string
+          format: password
     LoginResponse:
       type: object
       properties:
