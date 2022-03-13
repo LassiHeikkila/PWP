@@ -81,7 +81,7 @@ func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (h *handler) updateOrganization(w http.ResponseWriter, req *http.Request) {
+func (*handler) updateOrganization(w http.ResponseWriter, req *http.Request) {
 	// TODO: implement when / if organization has more details than name
 	// with just name property, it doesn't make sense to implement anything
 	defer req.Body.Close()
@@ -324,7 +324,7 @@ func (h *handler) createUserToken(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (h *handler) deleteUserToken(w http.ResponseWriter, req *http.Request) {
+func (*handler) deleteUserToken(w http.ResponseWriter, req *http.Request) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
@@ -548,13 +548,13 @@ func (h *handler) createMachineToken(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (h *handler) deleteMachineToken(w http.ResponseWriter, req *http.Request) {
+func (*handler) deleteMachineToken(w http.ResponseWriter, req *http.Request) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) createMachineSchedule(w http.ResponseWriter, req *http.Request) {
+func (*handler) createMachineSchedule(w http.ResponseWriter, req *http.Request) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
@@ -674,7 +674,7 @@ func (h *handler) deleteMachineSchedule(w http.ResponseWriter, req *http.Request
 	_ = encodeSuccess(w)
 }
 
-func (h *handler) addRecord(w http.ResponseWriter, req *http.Request, machine *types.Machine) {
+func (*handler) addRecord(w http.ResponseWriter, req *http.Request, _ *types.Machine) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
@@ -1045,7 +1045,7 @@ func (h *handler) loginChecker(w http.ResponseWriter, req *http.Request) {
 	_ = encodeSuccess(w)
 }
 
-func (h *handler) passwordChangeHandler(w http.ResponseWriter, req *http.Request) {
+func (*handler) passwordChangeHandler(w http.ResponseWriter, req *http.Request) {
 	// TODO: implement
 	defer req.Body.Close()
 	_ = encodeUnimplementedResponse(w)
