@@ -61,36 +61,6 @@ func (h *handler) createUser(w http.ResponseWriter, req *http.Request, requester
 	_ = encodeUnimplementedResponse(w)
 }
 
-func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester *types.User) {
-	defer req.Body.Close()
-
-	vars := mux.Vars(req)
-	orgID := vars[orgIDKey]
-
-	o, err := h.d.ReadOrganization(orgID)
-	if err != nil {
-		_ = encodeNotFoundResponse(w)
-		return
-	}
-
-	users := make([]types.User, 0, len(o.Users))
-	for _, usr := range o.Users {
-		u, err := h.d.ReadUser(usr.Name)
-		if err != nil {
-			continue
-		}
-
-		user := dbconverter.ConvertUser(u)
-		users = append(users, user)
-	}
-
-	_ = encodeResponse(w, Response{
-		Code:    http.StatusOK,
-		Message: "ok",
-		Payload: &users,
-	})
-}
-
 // /api/v1/{organization_id}/users/{user_id}/
 func (h *handler) readUser(w http.ResponseWriter, req *http.Request, requester *types.User) {
 	defer req.Body.Close()
@@ -121,6 +91,36 @@ func (h *handler) readUser(w http.ResponseWriter, req *http.Request, requester *
 		Code:    http.StatusOK,
 		Message: "ok",
 		Payload: &user,
+	})
+}
+
+func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester *types.User) {
+	defer req.Body.Close()
+
+	vars := mux.Vars(req)
+	orgID := vars[orgIDKey]
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	users := make([]types.User, 0, len(o.Users))
+	for i := range o.Users {
+		u, err := h.d.ReadUser(o.Users[i].Name)
+		if err != nil {
+			continue
+		}
+
+		user := dbconverter.ConvertUser(u)
+		users = append(users, user)
+	}
+
+	_ = encodeResponse(w, Response{
+		Code:    http.StatusOK,
+		Message: "ok",
+		Payload: &users,
 	})
 }
 
@@ -199,8 +199,8 @@ func (h *handler) readMachines(w http.ResponseWriter, req *http.Request, request
 	}
 
 	machines := make([]types.Machine, 0, len(o.Machines))
-	for _, m := range o.Machines {
-		mchn, err := h.d.ReadMachine(m.Name)
+	for i := range o.Machines {
+		mchn, err := h.d.ReadMachine(o.Machines[i].Name)
 		if err != nil {
 			continue
 		}
@@ -453,8 +453,8 @@ func (h *handler) readTasks(w http.ResponseWriter, req *http.Request, requester 
 	}
 
 	tasks := make([]types.Task, 0, len(o.Tasks))
-	for _, tsk := range o.Tasks {
-		t, err := h.d.ReadTask(tsk.Name)
+	for i := range o.Tasks {
+		t, err := h.d.ReadTask(o.Tasks[i].Name)
 		if err != nil {
 			continue
 		}
