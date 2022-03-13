@@ -5,15 +5,13 @@ package api
 // - creation of new user accounts by org admin
 // - new users can set their own password when logging in the first time
 
-type CreateOrganization struct {
-	OrganizationName string `json:"organizationName"`
-	AdminName        string `json:"adminUsername"`
-	AdminPassword    string `json:"adminPassword"`
+type SignUpRequest struct {
+	OrganizationName string `json:"orgName"`
+	Username         string `json:"username"`
+	Email            string `json:"email"`
+	Password         string `json:"password"`
 }
 
-type CreateOrganizationAccount struct {
-	OrganizationName string   `json:"organizationName"`
-	Username         string   `json:"username"`
-	Password         string   `json:"password"`
-	Roles            []string `json:"roles"`
+func validateSignUpRequest(r *SignUpRequest) bool {
+	return r.OrganizationName != "" && r.Username != "" && r.Email != "" && r.Password != ""
 }

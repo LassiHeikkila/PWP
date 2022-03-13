@@ -79,3 +79,8 @@ func (h *handler) RegisterRecordHandlers() error {
 	h.setRecordRoutesV1()
 	return nil
 }
+
+func (h *handler) RegisterSignUpHandlers() error {
+	h.setSignUpRoutesV1()
+	return nil
+}

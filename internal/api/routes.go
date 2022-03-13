@@ -15,8 +15,6 @@ import (
 */
 
 func (h *handler) setOrgRoutesV1() {
-	// create organization
-	h.router.HandleFunc("/api/v1/organizations/", h.createOrganization).Methods(http.MethodPost)
 	// read organization
 	h.router.Handle("/api/v1/organizations/{organization_id}/", h.requiresAdmin(h.readOrganization)).Methods(http.MethodGet)
 	// update organization
@@ -100,4 +98,9 @@ func (h *handler) setAuthRoutesV1() {
 	h.router.HandleFunc("/api/v1/auth/", h.loginChecker).Methods(http.MethodGet)
 	// change password
 	h.router.HandleFunc("/api/v1/auth/{username}/changepassword/", h.passwordChangeHandler).Methods(http.MethodPost)
+}
+
+func (h *handler) setSignUpRoutesV1() {
+	// create a new org
+	h.router.HandleFunc("/api/v1/signup/", h.signupHandler).Methods(http.MethodPost)
 }

@@ -105,6 +105,10 @@ func run(ctx context.Context) int {
 		log.Println("failed to register authentication routes!")
 		return 1
 	}
+	if err := h.RegisterSignUpHandlers(); err != nil {
+		log.Println("failed to register signup routes!")
+		return 1
+	}
 
 	log.Println("API handler initialized")
 
