@@ -986,7 +986,11 @@ components:
           type: integer
         msg:
           type: string
-
+        payload:
+          type: object
+      required:
+      - code
+      - msg
     Organization:
       type: object
       properties:
