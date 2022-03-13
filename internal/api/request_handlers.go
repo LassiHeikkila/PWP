@@ -34,7 +34,7 @@ func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request, req
 		return
 	}
 
-	org := dbconverter.ConvertOrganization(*o)
+	org := dbconverter.ConvertOrganization(o)
 
 	_ = encodeResponse(w, Response{
 		Code:    http.StatusOK,
@@ -80,7 +80,7 @@ func (h *handler) readUsers(w http.ResponseWriter, req *http.Request, requester 
 			continue
 		}
 
-		user := dbconverter.ConvertUser(*u)
+		user := dbconverter.ConvertUser(u)
 		users = append(users, user)
 	}
 
@@ -115,7 +115,7 @@ func (h *handler) readUser(w http.ResponseWriter, req *http.Request, requester *
 		return
 	}
 
-	user := dbconverter.ConvertUser(*u)
+	user := dbconverter.ConvertUser(u)
 
 	_ = encodeResponse(w, Response{
 		Code:    http.StatusOK,
@@ -177,7 +177,7 @@ func (h *handler) readMachine(w http.ResponseWriter, req *http.Request, requeste
 		return
 	}
 
-	machine := dbconverter.ConvertMachine(*m)
+	machine := dbconverter.ConvertMachine(m)
 
 	_ = encodeResponse(w, Response{
 		Code:    http.StatusOK,
@@ -205,7 +205,7 @@ func (h *handler) readMachines(w http.ResponseWriter, req *http.Request, request
 			continue
 		}
 
-		machine := dbconverter.ConvertMachine(*mchn)
+		machine := dbconverter.ConvertMachine(mchn)
 		machines = append(machines, machine)
 	}
 
@@ -309,7 +309,7 @@ func (h *handler) readRecord(w http.ResponseWriter, req *http.Request, requester
 	for i := range r {
 		rec := r[i]
 		if int64(rec.ID) == rid {
-			record := dbconverter.ConvertRecord(rec)
+			record := dbconverter.ConvertRecord(&rec)
 			_ = encodeResponse(w, Response{
 				Code:    http.StatusOK,
 				Message: "ok",
@@ -353,7 +353,7 @@ func (h *handler) readRecords(w http.ResponseWriter, req *http.Request, requeste
 
 	records := make([]types.Record, 0, len(r))
 	for i := range r {
-		record := dbconverter.ConvertRecord(r[i])
+		record := dbconverter.ConvertRecord(&r[i])
 		records = append(records, record)
 	}
 
@@ -399,7 +399,7 @@ func (h *handler) readTask(w http.ResponseWriter, req *http.Request, requester *
 		return
 	}
 
-	task := dbconverter.ConvertTask(*tsk)
+	task := dbconverter.ConvertTask(tsk)
 
 	_ = encodeResponse(w, Response{
 		Code:    http.StatusOK,
@@ -427,7 +427,7 @@ func (h *handler) readTasks(w http.ResponseWriter, req *http.Request, requester 
 			continue
 		}
 
-		task := dbconverter.ConvertTask(*t)
+		task := dbconverter.ConvertTask(t)
 		tasks = append(tasks, task)
 	}
 

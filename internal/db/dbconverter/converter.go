@@ -5,13 +5,13 @@ import (
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
-func ConvertOrganization(dborg db.Organization) types.Organization {
+func ConvertOrganization(dborg *db.Organization) types.Organization {
 	return types.Organization{
 		Name: dborg.Name,
 	}
 }
 
-func ConvertUser(dbuser db.User) types.User {
+func ConvertUser(dbuser *db.User) types.User {
 	return types.User{
 		Name:         dbuser.Name,
 		Email:        dbuser.Email,
@@ -20,7 +20,7 @@ func ConvertUser(dbuser db.User) types.User {
 	}
 }
 
-func ConvertMachine(dbmachine db.Machine) types.Machine {
+func ConvertMachine(dbmachine *db.Machine) types.Machine {
 	return types.Machine{
 		Name:        dbmachine.Name,
 		Description: dbmachine.Description,
@@ -29,7 +29,7 @@ func ConvertMachine(dbmachine db.Machine) types.Machine {
 	}
 }
 
-func ConvertTask(dbtask db.Task) types.Task {
+func ConvertTask(dbtask *db.Task) types.Task {
 	return types.Task{
 		Name:        dbtask.Name,
 		Description: dbtask.Description,
@@ -37,7 +37,7 @@ func ConvertTask(dbtask db.Task) types.Task {
 	}
 }
 
-func ConvertRecord(dbrecord db.Record) types.Record {
+func ConvertRecord(dbrecord *db.Record) types.Record {
 	return types.Record{
 		MachineName: dbrecord.Machine.Name,
 		TaskName:    dbrecord.Task.Name,
@@ -47,6 +47,6 @@ func ConvertRecord(dbrecord db.Record) types.Record {
 	}
 }
 
-func ConvertSchedule(dbschedule db.Schedule) types.Schedule {
+func ConvertSchedule(dbschedule *db.Schedule) types.Schedule {
 	return types.Schedule{}
 }
