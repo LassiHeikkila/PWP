@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"encoding/hex"
+	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"github.com/LassiHeikkila/taskey/internal/api"
@@ -16,15 +19,29 @@ import (
 )
 
 const (
-	postgresHost = "127.0.0.1"
-	postgresPort = 5432
-	postgresUser = "postgres"
-	postgresPw   = "test1234"
+	dbHostEnvKey     = "TASKEYDBHOST"
+	dbPortEnvKey     = "TASKEYDBPORT"
+	dbUserEnvKey     = "TASKEYDBUSER"
+	dbPasswordEnvKey = "TASKEYDBPASSWORD"
+	jwtKeyEnvKey     = "TASKEYJWTKEY"
+)
 
-	httpPort = 8081
+var (
+	dbHost     = getEnvOrDefault(dbHostEnvKey, defaultDbHost)
+	dbPort     = getEnvOrDefaultInt(dbPortEnvKey, defaultDbPort)
+	dbUser     = os.Getenv(dbUserEnvKey)
+	dbPassword = os.Getenv(dbPasswordEnvKey)
+
+	privateKey = os.Getenv(jwtKeyEnvKey)
+
+	httpPort = defaultHttpPort
 )
 
 func main() {
+	flag.IntVar(&httpPort, "port", defaultHttpPort, "Port to use for HTTP interface")
+
+	flag.Parse()
+
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		sc := make(chan os.Signal, 1)
@@ -38,11 +55,15 @@ func main() {
 }
 
 func run(ctx context.Context) int {
+	if err := validateArgs(); err != nil {
+		log.Println("error validating arguments:", err)
+		return 1
+	}
 	d := db.OpenDB(
-		db.WithHost(postgresHost),
-		db.WithPort(postgresPort),
-		db.WithUsername(postgresUser),
-		db.WithPassword(postgresPw),
+		db.WithHost(dbHost),
+		db.WithPort(dbPort),
+		db.WithUsername(dbUser),
+		db.WithPassword(dbPassword),
 		db.WithSSLMode("disable"),
 	)
 	if d == nil {
@@ -63,7 +84,6 @@ func run(ctx context.Context) int {
 
 	log.Println("db handler initialized")
 
-	privateKey := os.Getenv("TASKEYJWTKEY")
 	privKey, err := hex.DecodeString(privateKey)
 	if err != nil {
 		log.Println("TASKEYJWTKEY not in hex encoded format!")
@@ -147,4 +167,39 @@ func run(ctx context.Context) int {
 	}
 
 	return 0
+}
+
+func validateArgs() error {
+	if dbHost == "" {
+		return errors.New("empty db host")
+	}
+	if dbPort == 0 {
+		return errors.New("empty db port")
+	}
+	if dbUser == "" {
+		return errors.New("empty db user")
+	}
+	if dbPassword == "" {
+		return errors.New("empty db password")
+	}
+	if privateKey == "" {
+		return errors.New("empty private key for token generator")
+	}
+	return nil
+}
+
+func getEnvOrDefault(key, def string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return def
+}
+
+func getEnvOrDefaultInt(key string, def int) int {
+	v := os.Getenv(key)
+	if v == "" {
+		return def
+	}
+	i, _ := strconv.Atoi(v)
+	return i
 }
