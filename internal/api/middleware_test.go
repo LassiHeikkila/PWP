@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -38,6 +39,8 @@ func TestAuthenticatedUserMiddleware(t *testing.T) {
 		_, _ = w.Write([]byte(`ok`))
 	}
 
+	// check that when token validation returns a user, next is called
+
 	mw := NewAuthUserMiddleware(next, a, d, types.RoleUser)
 
 	w := httptest.NewRecorder()
@@ -47,6 +50,20 @@ func TestAuthenticatedUserMiddleware(t *testing.T) {
 
 	if !called {
 		t.Fatal("next not called")
+	}
+
+	// check that when token validation returns an error, next is not called
+
+	called = false
+	d.EXPECT().ReadUserToken(db.StringToUUID(`91f2a925-a2c5-4a59-aa13-adeb7950faa8`)).Return(nil, errors.New("invalid token"))
+
+	w2 := httptest.NewRecorder()
+	req2 := httptest.NewRequest(http.MethodGet, "http://localhost:8080/example", nil)
+	req2.Header.Set("Authorization", "Key 91f2a925-a2c5-4a59-aa13-adeb7950faa8")
+	mw.ServeHTTP(w2, req2)
+
+	if called {
+		t.Fatal("next called!")
 	}
 }
 
@@ -79,8 +96,10 @@ func TestAuthenticatedMachineMiddleware(t *testing.T) {
 		called = true
 		calledWithMachine = machine
 
-		w.Write([]byte(`ok`))
+		_, _ = w.Write([]byte(`ok`))
 	})
+
+	// check that when token validation returns a machine, next is called
 
 	mw := NewAuthMachineMiddleware(next, a, d)
 
@@ -93,4 +112,18 @@ func TestAuthenticatedMachineMiddleware(t *testing.T) {
 		t.Fatal("next not called")
 	}
 	require.Equal(t, expectedMachine, calledWithMachine)
+
+	// check that when token validation fails, next is not called
+
+	called = false
+	d.EXPECT().ReadMachineToken(db.StringToUUID(`c87fcad1-2f2a-40f2-8da0-38712863003a`)).Return(nil, errors.New("invalid token"))
+
+	w2 := httptest.NewRecorder()
+	req2 := httptest.NewRequest(http.MethodGet, "http://localhost:8080/example", nil)
+	req2.Header.Set("Authorization", "Key c87fcad1-2f2a-40f2-8da0-38712863003a")
+	mw.ServeHTTP(w2, req2)
+
+	if called {
+		t.Fatal("next called")
+	}
 }
