@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -325,7 +326,9 @@ func TestProcessRequestGetUser(t *testing.T) {
 			*role = int(types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot)
 		}
 		return true
-	})
+	}).Times(2)
+
+	// check that an existing user is returned
 
 	d.EXPECT().ReadUser("user456").Return(&db.User{
 		Model: gorm.Model{
@@ -362,6 +365,52 @@ func TestProcessRequestGetUser(t *testing.T) {
 
 	if response.Code != 200 {
 		t.Fatal("response not 200:", response)
+	}
+
+	// check that a non-existing user returns 404
+
+	// server will check that the caller is a valid user
+	d.EXPECT().ReadUser("user456").Return(&db.User{
+		Model: gorm.Model{
+			ID: 456,
+		},
+		Name:           "user456",
+		Email:          "lassi@example.com",
+		OrganizationID: 123,
+		Role:           types.RoleUser | types.RoleMaintainer | types.RoleAdministrator | types.RoleRoot,
+	}, nil).Times(1)
+
+	d.EXPECT().ReadOrganization("org123").Return(&db.Organization{
+		Model: gorm.Model{
+			ID: 123,
+		},
+		Name: "org123",
+	}, nil).Times(1)
+
+	// lookup for non-existent user
+	d.EXPECT().ReadUser("user654").Return(nil, errors.New("not found"))
+	req2, _ := http.NewRequest(http.MethodGet, server.URL+"/api/v1/org123/users/user654/", nil)
+	req2.Header.Set("Authorization", "Bearer my test key")
+
+	resp2, err := client.Do(req2)
+	if err != nil {
+		t.Fatal("error doing request:", err)
+	}
+	defer resp2.Body.Close()
+
+	var response2 Response
+	b, _ = io.ReadAll(resp2.Body)
+
+	if len(b) == 0 {
+		t.Fatal("nothing returned in response")
+	}
+
+	if err := json.Unmarshal(b, &response2); err != nil {
+		t.Fatal("failed to decode response as JSON: \"", err, "\", response was: \"", string(b), "\"")
+	}
+
+	if response2.Code != 404 {
+		t.Fatal("response not 404:", response2)
 	}
 }
 
