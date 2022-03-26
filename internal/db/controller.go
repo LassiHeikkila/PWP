@@ -51,7 +51,7 @@ type Controller interface {
 	DeleteMachineToken(value pgtype.UUID) error
 	DeleteLoginInfo(username string) error
 	DeleteRecords(machineName string) error
-	DeleteRecord(machineName string, recordID uint) error
+	DeleteRecord(machineName string, recordID uint64) error
 }
 
 type controller struct {
@@ -629,7 +629,7 @@ func (c *controller) DeleteRecords(machineName string) error {
 	return nil
 }
 
-func (c *controller) DeleteRecord(machineName string, recordID uint) error {
+func (c *controller) DeleteRecord(machineName string, recordID uint64) error {
 	if c == nil || c.db == nil {
 		return noDB
 	}

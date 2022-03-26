@@ -218,7 +218,7 @@ func (mr *MockControllerMockRecorder) DeleteOrganization(arg0 interface{}) *gomo
 }
 
 // DeleteRecord mocks base method.
-func (m *MockController) DeleteRecord(arg0 string, arg1 uint) error {
+func (m *MockController) DeleteRecord(arg0 string, arg1 uint64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteRecord", arg0, arg1)
 	ret0, _ := ret[0].(error)

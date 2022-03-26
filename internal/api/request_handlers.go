@@ -781,7 +781,8 @@ func (h *handler) deleteRecord(w http.ResponseWriter, req *http.Request) {
 	orgID := sanitizeParameter(vars[orgIDKey])
 	machineID := sanitizeParameter(vars[machineIDKey])
 	recordID := sanitizeParameter(vars[recordIDKey])
-	rid, err := strconv.ParseInt(recordID, 10, 64)
+
+	rid, err := strconv.ParseUint(recordID, 10, 64)
 	if err != nil {
 		_ = encodeBadRequestResponse(w)
 	}
@@ -802,7 +803,7 @@ func (h *handler) deleteRecord(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := h.d.DeleteRecord(m.Name, uint(rid)); err != nil {
+	if err := h.d.DeleteRecord(m.Name, rid); err != nil {
 		_ = encodeFailure(w)
 		return
 	}
