@@ -66,13 +66,11 @@ func (h *handler) readOrganization(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	orgID := sanitizeParameter(vars[orgIDKey])
 
-	o, err := h.d.ReadOrganization(orgID)
-	if err != nil {
+	org := lookupOrganizationByID(h.d, orgID)
+	if org == nil {
 		_ = encodeNotFoundResponse(w)
 		return
 	}
-
-	org := dbconverter.ConvertOrganization(o)
 
 	_ = encodeResponse(w, Response{
 		Code:    http.StatusOK,
