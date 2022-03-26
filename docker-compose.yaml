@@ -3,14 +3,22 @@ services:
     pg:
         image: "postgres:latest"
         restart: always
-        volumes:
-            - pg-data:/var/lib/postgresql/data
+#        volumes:
+#            - pg-data:/var/lib/postgresql/data
         env_file: pg.env
+        ports:
+        - 5432:5432
     adminer:
         image: "adminer:latest"
         restart: always
         ports:
         - 8080:8080
-volumes:
-    pg-data:
-    pg-logs:
+    taskey:
+        image: "taskey:latest"
+        restart: always
+        env_file: taskey.env
+        ports:
+        - 8081:80
+#volumes:
+#    pg-data:
+#    pg-logs:
