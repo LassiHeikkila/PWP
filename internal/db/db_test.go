@@ -227,6 +227,8 @@ func TestDBIntegration(t *testing.T) {
 		Output:     "failed",
 	}
 
+	org.Tasks = append(org.Tasks, task)
+
 	t.Run("test user token creation", func(t *testing.T) {
 		err := c.CreateUserToken(&userToken)
 		if err != nil {

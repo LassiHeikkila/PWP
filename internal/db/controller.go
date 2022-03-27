@@ -252,7 +252,7 @@ func (c *controller) ReadOrganization(name string) (*Organization, error) {
 	}
 
 	var org Organization
-	res := c.db.Preload("Users").Preload("Machines").First(&org, `name = ?`, name)
+	res := c.db.Preload("Users").Preload("Machines").Preload("Tasks").First(&org, `name = ?`, name)
 	err := res.Error
 	if err != nil {
 		return nil, err
