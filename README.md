@@ -16,5 +16,7 @@ If you have Go installed locally, you can simply run `go run ./cmd/taskey/` at t
 
 You must have a running PostgreSQL server on your localhost, e.g. in a Docker container.
 
+You may also build a Docker image using `docker image build -t taskey .` and run everything (requires `docker-compose`) by doing `docker-compose up -d`.
+
 # Running tests
 If you have Go installed locally, you can simply run `go test -v ./...` at the root of the repository to execute all tests.
