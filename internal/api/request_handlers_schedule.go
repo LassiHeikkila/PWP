@@ -10,10 +10,46 @@ import (
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
-func (*handler) createMachineSchedule(w http.ResponseWriter, req *http.Request) {
-	// TODO: implement
+func (h *handler) createMachineSchedule(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
-	_ = encodeUnimplementedResponse(w)
+
+	vars := mux.Vars(req)
+	orgID := sanitizeParameter(vars[orgIDKey])
+	machineID := sanitizeParameter(vars[machineIDKey])
+
+	o, err := h.d.ReadOrganization(orgID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	m, err := h.d.ReadMachine(machineID)
+	if err != nil {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	if m.OrganizationID != o.ID {
+		_ = encodeNotFoundResponse(w)
+		return
+	}
+
+	var reqSchedule types.Schedule
+	dec := json.NewDecoder(req.Body)
+	if err := dec.Decode(&reqSchedule); err != nil {
+		_ = encodeBadRequestResponse(w)
+		return
+	}
+
+	schedule := dbconverter.ConvertScheduleToDB(&reqSchedule)
+	schedule.MachineID = m.ID
+
+	if err := h.d.CreateSchedule(&schedule); err != nil {
+		_ = encodeFailure(w)
+		return
+	}
+
+	_ = encodeSuccess(w)
 }
 
 func (h *handler) readMachineSchedule(w http.ResponseWriter, req *http.Request) {
