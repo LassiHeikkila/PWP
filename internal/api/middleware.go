@@ -1,7 +1,9 @@
 package api
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -139,4 +141,12 @@ func (h *handler) requiresUser(next func(http.ResponseWriter, *http.Request)) ht
 
 func (h *handler) requiresMachine(next AuthenticatedMachineHandler) http.Handler {
 	return NewAuthMachineMiddleware(next, h.a, h.d)
+}
+
+func ExecutionTimeHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		start := time.Now()
+		h.ServeHTTP(w, req)
+		log.Println("serving took:", time.Since(start))
+	})
 }

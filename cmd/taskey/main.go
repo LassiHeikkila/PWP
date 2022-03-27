@@ -13,6 +13,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/handlers"
+
 	"github.com/LassiHeikkila/taskey/internal/api"
 	"github.com/LassiHeikkila/taskey/internal/auth"
 	"github.com/LassiHeikkila/taskey/internal/db"
@@ -144,7 +146,7 @@ func run(ctx context.Context) int {
 	log.Println("API handler initialized")
 
 	srv := &http.Server{
-		Handler:      h,
+		Handler:      handlers.CombinedLoggingHandler(log.Writer(), api.ExecutionTimeHandler(h)),
 		Addr:         fmt.Sprintf(":%d", httpPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
