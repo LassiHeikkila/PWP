@@ -5,7 +5,7 @@ import (
 )
 
 type Record struct {
-	MachineName string    `json:"machineName"`
+	MachineName string    `json:"machineName,omitempty"`
 	TaskName    string    `json:"taskName"`
 	ExecutedAt  time.Time `json:"executedAt"`
 	Status      int       `json:"status"`
