@@ -503,6 +503,27 @@ paths:
           $ref: '#/components/responses/NotFound'
         501:
           $ref: '#/components/responses/Unimplemented'
+  /{organization_id}/machines/self/schedule/:
+      get:
+        tags:
+          - machine access
+        summary: Endpoint for a machine to GET it's own schedule
+        operationId: readMachineOwnSchedule
+        parameters:
+        - $ref: '#/components/parameters/organizationId'
+        security:
+        - accessToken: []
+        responses:
+          200:
+            $ref: '#/components/responses/ScheduleResponse'
+          401:
+            $ref: '#/components/responses/Unauthenticated'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          501:
+            $ref: '#/components/responses/Unimplemented'
   /{organization_id}/tasks/:
     get:
       tags:
@@ -614,6 +635,27 @@ paths:
           $ref: '#/components/responses/NotFound'
         501:
           $ref: '#/components/responses/Unimplemented'
+  /{organization_id}/machines/self/tasks/:
+      get:
+        tags:
+          - machine access
+        summary: Endpoint for machine to GET task definitions
+        operationId: readMachineOwnTasks
+        parameters:
+        - $ref: '#/components/parameters/organizationId'
+        security:
+        - accessToken: []
+        responses:
+          200:
+            $ref: '#/components/responses/TasksResponse'
+          401:
+            $ref: '#/components/responses/Unauthenticated'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          501:
+            $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/records/:
     get:
       tags:
@@ -634,28 +676,27 @@ paths:
           $ref: '#/components/responses/NotFound'
         501:
           $ref: '#/components/responses/Unimplemented'
-    post:
-      tags:
-      - records
-      summary: Create a new record
-      operationId: createMachineRecord
-      parameters:
-      - $ref: '#/components/parameters/organizationId'
-      - $ref: '#/components/parameters/machineId'
-      security:
-      - bearerAuth: []
-      - accessToken: []
-      responses:
-        200:
-          $ref: '#/components/responses/Success'
-        401:
-          $ref: '#/components/responses/Unauthenticated'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        501:
-          $ref: '#/components/responses/Unimplemented'
+  /{organization_id}/machines/self/records/:
+      post:
+        tags:
+          - machine access
+        summary: Endpoint for machine to POST records
+        operationId: createMachineRecord
+        parameters:
+        - $ref: '#/components/parameters/organizationId'
+        security:
+        - accessToken: []
+        responses:
+          200:
+            $ref: '#/components/responses/Success'
+          401:
+            $ref: '#/components/responses/Unauthenticated'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          501:
+            $ref: '#/components/responses/Unimplemented'
   /{organization_id}/machines/{machine_id}/records/{record_id}/:
     get:
       tags:

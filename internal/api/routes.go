@@ -56,22 +56,20 @@ func (h *handler) setMachineRoutesV1() {
 
 func (h *handler) setScheduleRoutesV1() {
 	// create, read, update or delete machine schedule
+	h.router.Handle("/api/v1/{organization_id}/machines/self/schedule/", h.requiresMachine(h.readMachineOwnSchedule)).Methods(http.MethodGet)
+
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresMaintainer(h.createMachineSchedule)).Methods(http.MethodPost)
-	// TODO: think about how to route this so machine can also get their own schedule
-	// or should there be a separate endpoint like /api/v1/{organization_id}/machines/self/schedule/
-	// and handler will identify machine based on token ?
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresUser(h.readMachineSchedule)).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresMaintainer(h.updateMachineSchedule)).Methods(http.MethodPut)
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/schedule/", h.requiresMaintainer(h.deleteMachineSchedule)).Methods(http.MethodDelete)
+
 }
 
 func (h *handler) setRecordRoutesV1() {
 	// create and read records
-	// TODO: this about adding machine member middleware
-	// TODO: also think about adding endpoint where machine can just post record without specifying its own id
-	// e.g. POST /api/v1/{organization_id}/addrecord/
-	// and server will figure out who it came from based on Authorization header
-	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresMachine(h.addRecord)).Methods(http.MethodPost)
+	// only machines are allowed to create records
+	h.router.Handle("/api/v1/{organization_id}/machines/self/records/", h.requiresMachine(h.addRecord)).Methods(http.MethodPost)
+
 	h.router.Handle("/api/v1/{organization_id}/machines/{machine_id}/records/", h.requiresUser(h.readRecords)).Methods(http.MethodGet)
 
 	// records are immutable so modifying them via PUT is not allowed
@@ -88,7 +86,8 @@ func (h *handler) setTaskRoutesV1() {
 	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresUser(h.readTask)).Methods(http.MethodGet)
 	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresMaintainer(h.updateTask)).Methods(http.MethodPut)
 	h.router.Handle("/api/v1/{organization_id}/tasks/{task_id}/", h.requiresMaintainer(h.deleteTask)).Methods(http.MethodDelete)
-	// TODO: this about how machines will retrieve task definitions
+	// machine can fetch task definitions mentioned in its own schedule
+	h.router.Handle("/api/v1/{organization_id}/machines/self/tasks/", h.requiresMachine(h.readMachineTasks)).Methods(http.MethodGet)
 }
 
 func (h *handler) setAuthRoutesV1() {
