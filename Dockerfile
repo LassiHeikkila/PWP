@@ -1,7 +1,7 @@
 ##
 ## BUILD STAGE
 ##
-FROM golang:1.17 AS build
+FROM golang:1.18 AS build
 
 WORKDIR /src
 
@@ -22,11 +22,7 @@ RUN echo "Building taskey-cli" && go build -v -o taskey-cli ./cmd/taskey-cli/
 ##
 ## DEPLOY STAGE
 ##
-# TODO: Figure out if this needs to use a specific tag.
-# Maybe it would be simpler to just use some tagged
-# Alpine image as minimal size isn't the most important factor.
-# Then again, with distroless image, attack surface is very minimal.
-FROM gcr.io/distroless/base-debian11 AS deploy
+FROM scratch
 
 COPY --from=build /src/taskey /taskey
 COPY --from=build /src/taskeyd /taskeyd
