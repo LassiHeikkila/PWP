@@ -21,9 +21,9 @@ func ConvertOrganizationToDB(org *types.Organization) db.Organization {
 
 func ConvertUser(dbuser *db.User) types.User {
 	return types.User{
-		Name:         dbuser.Name,
-		Email:        dbuser.Email,
-		Role:         dbuser.Role,
+		Name:  dbuser.Name,
+		Email: dbuser.Email,
+		Role:  dbuser.Role,
 	}
 }
 
@@ -94,16 +94,14 @@ func ConvertRecordToDB(record *types.Record) db.Record {
 }
 
 func ConvertSchedule(dbschedule *db.Schedule) types.Schedule {
-	c := make(map[string]interface{})
-	_ = json.Unmarshal(dbschedule.Content.Bytes, &c)
+	s := types.Schedule{}
+	_ = json.Unmarshal(dbschedule.Content.Bytes, &s)
 
-	return types.Schedule{
-		Content: c,
-	}
+	return s
 }
 
 func ConvertScheduleToDB(schedule *types.Schedule) db.Schedule {
-	b, _ := json.Marshal(&schedule.Content)
+	b, _ := json.Marshal(schedule)
 
 	return db.Schedule{
 		Content: db.StringToJSON(string(b)),
