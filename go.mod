@@ -1,6 +1,6 @@
 module github.com/LassiHeikkila/taskey
 
-go 1.17
+go 1.18
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -62,7 +62,10 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/opencontainers/runc v1.0.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/robfig/cron v1.2.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
