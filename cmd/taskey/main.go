@@ -69,6 +69,7 @@ func run(ctx context.Context) int {
 		db.WithUsername(dbUser),
 		db.WithPassword(dbPassword),
 		db.WithSSLMode("disable"),
+		db.WithDBName(dbDb),
 	)
 	if d == nil {
 		log.Println("failed to initialize database!")
