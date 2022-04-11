@@ -1,6 +1,8 @@
 module github.com/LassiHeikkila/taskey
 
 // +heroku goVersion go1.18
+// +heroku install ./cmd/taskey
+
 go 1.18
 
 require (
