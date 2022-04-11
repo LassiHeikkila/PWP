@@ -11,7 +11,13 @@ func OpenDB(opts ...Option) *gorm.DB {
 	dsn := defaultDsn
 	dsn.ApplyOptions(opts...)
 	logger.Println("Opening Postgres DB with options:", dsn.CensoredString())
-	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config{})
+
+	// We want default transactions to be enabled,
+	// data consistency is much more important than performance (for now)
+	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config{
+		SkipDefaultTransaction: false, // skipcq: GO-W1004
+	})
+
 	if err != nil {
 		logger.Println("error opening Postgres DB:", err)
 		return nil
