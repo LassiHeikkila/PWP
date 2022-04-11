@@ -38,7 +38,7 @@ type machineClaims struct {
 	jwt.StandardClaims
 }
 
-func NewController(key []byte) *authController {
+func NewController(key []byte) Controller {
 	if len(key) == 0 {
 		const desiredLength = 32 // 32 bytes == 256 bits
 		key = make([]byte, desiredLength)

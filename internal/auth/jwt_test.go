@@ -125,7 +125,7 @@ func TestControllerConstructor(t *testing.T) {
 		if a == nil {
 			t.Fatal("nil controller returned")
 		}
-		if !cmp.Equal(key, a.key) {
+		if !cmp.Equal(key, a.(*authController).key) {
 			t.Fatal("wrong key")
 		}
 	})
@@ -134,7 +134,7 @@ func TestControllerConstructor(t *testing.T) {
 		if a == nil {
 			t.Fatal("nil controller returned")
 		}
-		if len(a.key) == 0 {
+		if len(a.(*authController).key) == 0 {
 			t.Fatal("no key generated")
 		}
 	})

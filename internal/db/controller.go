@@ -60,7 +60,7 @@ type controller struct {
 
 var _ Controller = &controller{}
 
-func NewController(db *gorm.DB) *controller {
+func NewController(db *gorm.DB) Controller {
 	return &controller{
 		db: db,
 	}
