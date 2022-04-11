@@ -73,6 +73,10 @@ func (dsn dsn) ApplyOptions(opts ...Option) {
 }
 
 func (dsn dsn) String() string {
+	if connString, present := dsn["raw"]; present {
+		return connString.(string)
+	}
+
 	var r string
 	for k, v := range dsn {
 		r += fmt.Sprintf("%s=%v ", k, v)
@@ -94,6 +98,12 @@ func (dsn dsn) CensoredString() string {
 }
 
 type Option func(dsn)
+
+func WithConnString(connString string) Option {
+	return func(d dsn) {
+		d["raw"] = connString
+	}
+}
 
 func WithHost(host string) Option {
 	return func(d dsn) {

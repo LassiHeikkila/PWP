@@ -26,15 +26,21 @@ const (
 	dbUserEnvKey     = "TASKEYDBUSER"
 	dbPasswordEnvKey = "TASKEYDBPASSWORD"
 	dbDbEnvKey       = "TASKEYDBDB"
+	dbSslModeEnvKey  = "TASKEYDBSSLMODE"
+	dbUrlEnvKey      = "DATABASE_URL"
 	jwtKeyEnvKey     = "TASKEYJWTKEY"
 )
 
 var (
+	// define connection parameters separately
 	dbHost     = getEnvOrDefault(dbHostEnvKey, defaultDbHost)
 	dbPort     = getEnvOrDefaultInt(dbPortEnvKey, defaultDbPort)
 	dbDb       = getEnvOrDefault(dbDbEnvKey, defaultDbDb)
+	dbSslMode  = getEnvOrDefault(dbSslModeEnvKey, defaultDbSslMode)
 	dbUser     = os.Getenv(dbUserEnvKey)
 	dbPassword = os.Getenv(dbPasswordEnvKey)
+	// or define everything using DATABASE_URL
+	dbUrl = os.Getenv(dbUrlEnvKey)
 
 	privateKey = os.Getenv(jwtKeyEnvKey)
 
@@ -63,14 +69,22 @@ func run(ctx context.Context) int {
 		log.Println("error validating arguments:", err)
 		return 1
 	}
-	d := db.OpenDB(
-		db.WithHost(dbHost),
-		db.WithPort(dbPort),
-		db.WithUsername(dbUser),
-		db.WithPassword(dbPassword),
-		db.WithSSLMode("disable"),
-		db.WithDBName(dbDb),
-	)
+	var opts []db.Option
+	if dbUrl != "" {
+		opts = []db.Option{
+			db.WithConnString(dbUrl),
+		}
+	} else {
+		opts = []db.Option{
+			db.WithHost(dbHost),
+			db.WithPort(dbPort),
+			db.WithUsername(dbUser),
+			db.WithPassword(dbPassword),
+			db.WithSSLMode(dbSslMode),
+			db.WithDBName(dbDb),
+		}
+	}
+	d := db.OpenDB(opts...)
 	if d == nil {
 		log.Println("failed to initialize database!")
 		return 1
@@ -175,6 +189,14 @@ func run(ctx context.Context) int {
 }
 
 func validateArgs() error {
+	if dbUrl != "" {
+		if privateKey != "" {
+			return nil
+		} else {
+			return errors.New("empty private key for token generator")
+		}
+	}
+
 	if dbHost == "" {
 		return errors.New("empty db host")
 	}
