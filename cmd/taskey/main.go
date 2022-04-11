@@ -25,12 +25,14 @@ const (
 	dbPortEnvKey     = "TASKEYDBPORT"
 	dbUserEnvKey     = "TASKEYDBUSER"
 	dbPasswordEnvKey = "TASKEYDBPASSWORD"
+	dbDbEnvKey       = "TASKEYDBDB"
 	jwtKeyEnvKey     = "TASKEYJWTKEY"
 )
 
 var (
 	dbHost     = getEnvOrDefault(dbHostEnvKey, defaultDbHost)
 	dbPort     = getEnvOrDefaultInt(dbPortEnvKey, defaultDbPort)
+	dbDb       = getEnvOrDefault(dbDbEnvKey, defaultDbDb)
 	dbUser     = os.Getenv(dbUserEnvKey)
 	dbPassword = os.Getenv(dbPasswordEnvKey)
 
