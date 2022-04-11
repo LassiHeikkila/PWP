@@ -1,1 +1,1 @@
-web: bin/taskey
+web: bin/taskey -port $PORT
