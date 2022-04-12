@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -21,14 +22,15 @@ import (
 )
 
 const (
-	dbHostEnvKey     = "TASKEYDBHOST"
-	dbPortEnvKey     = "TASKEYDBPORT"
-	dbUserEnvKey     = "TASKEYDBUSER"
-	dbPasswordEnvKey = "TASKEYDBPASSWORD"
-	dbDbEnvKey       = "TASKEYDBDB"
-	dbSslModeEnvKey  = "TASKEYDBSSLMODE"
-	dbUrlEnvKey      = "DATABASE_URL"
-	jwtKeyEnvKey     = "TASKEYJWTKEY"
+	dbHostEnvKey             = "TASKEYDBHOST"
+	dbPortEnvKey             = "TASKEYDBPORT"
+	dbUserEnvKey             = "TASKEYDBUSER"
+	dbPasswordEnvKey         = "TASKEYDBPASSWORD"
+	dbDbEnvKey               = "TASKEYDBDB"
+	dbSslModeEnvKey          = "TASKEYDBSSLMODE"
+	dbUrlEnvKey              = "DATABASE_URL"
+	jwtKeyEnvKey             = "TASKEYJWTKEY"
+	allowedCORSOriginsEnvKey = "TASKEYCORSORIGINS"
 )
 
 var (
@@ -42,7 +44,8 @@ var (
 	// or define everything using DATABASE_URL
 	dbUrl = os.Getenv(dbUrlEnvKey)
 
-	privateKey = os.Getenv(jwtKeyEnvKey)
+	privateKey         = os.Getenv(jwtKeyEnvKey)
+	allowedCORSOrigins = os.Getenv(allowedCORSOriginsEnvKey)
 
 	httpPort = defaultHttpPort
 )
@@ -162,8 +165,10 @@ func run(ctx context.Context) int {
 
 	log.Println("API handler initialized")
 
+	originsOK := handlers.AllowedOrigins(parseAllowedOrigins(allowedCORSOrigins))
+
 	srv := &http.Server{
-		Handler:      handlers.CombinedLoggingHandler(log.Writer(), api.ExecutionTimeHandler(h)),
+		Handler:      handlers.CORS(originsOK)(handlers.CombinedLoggingHandler(log.Writer(), api.ExecutionTimeHandler(h))),
 		Addr:         fmt.Sprintf(":%d", httpPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
@@ -229,4 +234,8 @@ func getEnvOrDefaultInt(key string, def int) int {
 	}
 	i, _ := strconv.Atoi(v)
 	return i
+}
+
+func parseAllowedOrigins(confString string) []string {
+	return strings.Split(confString, ",")
 }
