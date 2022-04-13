@@ -165,10 +165,12 @@ func run(ctx context.Context) int {
 
 	log.Println("API handler initialized")
 
+	// https://stackoverflow.com/a/40987389/13580269
 	originsOK := handlers.AllowedOrigins(parseAllowedOrigins(allowedCORSOrigins))
+	methodsOK := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
 
 	srv := &http.Server{
-		Handler:      handlers.CORS(originsOK)(handlers.CombinedLoggingHandler(log.Writer(), api.ExecutionTimeHandler(h))),
+		Handler:      handlers.CORS(originsOK, methodsOK)(handlers.CombinedLoggingHandler(log.Writer(), api.ExecutionTimeHandler(h))),
 		Addr:         fmt.Sprintf(":%d", httpPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
