@@ -162,6 +162,10 @@ func run(ctx context.Context) int {
 		log.Println("failed to register openapi route!")
 		return 2
 	}
+	if err := h.RegisterExtraRoute("/api/v1/health/", serveHealth); err != nil {
+		log.Println("failed to register health endpoint!")
+		return 2
+	}
 
 	log.Println("API handler initialized")
 

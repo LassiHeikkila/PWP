@@ -30,6 +30,8 @@ type handler struct {
 func NewHandler(a auth.Controller, d db.Controller) *handler {
 	m := mux.NewRouter()
 
+	m.Use(mux.CORSMethodMiddleware(m))
+
 	return &handler{
 		router: m,
 		a:      a,
@@ -40,6 +42,9 @@ func NewHandler(a auth.Controller, d db.Controller) *handler {
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if h.router == nil {
 		http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
+		return
+	}
+	if r.Method == http.MethodOptions {
 		return
 	}
 	h.router.ServeHTTP(w, r)
