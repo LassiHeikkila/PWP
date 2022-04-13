@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func serveHealth(w http.ResponseWriter, req *http.Request) {
+func serveHealth(w http.ResponseWriter, _ *http.Request) {
 	m := map[string]interface{}{
 		"ok": true,
 	}
