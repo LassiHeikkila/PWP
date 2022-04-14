@@ -171,11 +171,21 @@ func run(ctx context.Context) int {
 
 	// CORS handling courtesy of:
 	// https://stackoverflow.com/a/40987389/13580269
+	headersOK := handlers.AllowedHeaders([]string{
+		"Authorization",
+		"Content-Type",
+		"Access-Control-Request-Headers",
+		"Access-Control-Request-Method",
+	})
 	originsOK := handlers.AllowedOrigins(parseAllowedOrigins(allowedCORSOrigins))
-	methodsOK := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
 
 	srv := &http.Server{
-		Handler:      handlers.CombinedLoggingHandler(log.Writer(), api.ExecutionTimeHandler(handlers.CORS(originsOK, methodsOK)(h))),
+		Handler: handlers.CombinedLoggingHandler(
+			log.Writer(), api.ExecutionTimeHandler(
+				handlers.CORS(
+					originsOK,
+					headersOK,
+				)(h))),
 		Addr:         fmt.Sprintf(":%d", httpPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

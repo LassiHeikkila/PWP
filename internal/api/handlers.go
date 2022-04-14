@@ -30,8 +30,6 @@ type handler struct {
 func NewHandler(a auth.Controller, d db.Controller) *handler {
 	m := mux.NewRouter()
 
-	m.Use(mux.CORSMethodMiddleware(m))
-
 	return &handler{
 		router: m,
 		a:      a,
