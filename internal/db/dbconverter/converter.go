@@ -76,6 +76,7 @@ func ConvertTaskToDB(task *types.Task) db.Task {
 
 func ConvertRecord(dbrecord *db.Record) types.Record {
 	return types.Record{
+		ID:          dbrecord.ID,
 		MachineName: dbrecord.Machine.Name,
 		TaskName:    dbrecord.Task.Name,
 		ExecutedAt:  dbrecord.ExecutedAt,

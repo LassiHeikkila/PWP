@@ -1151,6 +1151,8 @@ components:
     Record:
       type: object
       properties:
+        id:
+          type: integer
         machineName:
           type: string
         taskName:
