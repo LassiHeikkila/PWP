@@ -2,6 +2,8 @@ package types
 
 import (
 	"time"
+
+	"github.com/LassiHeikkila/taskey/pkg/json"
 )
 
 type Schedule struct {
@@ -16,7 +18,7 @@ type SingleshotTask struct {
 }
 
 type PeriodicTask struct {
-	Interval time.Duration `json:"every"` // anything supported by http://golang.org/pkg/time/#ParseDuration
+	Interval json.Duration `json:"every"` // anything supported by http://golang.org/pkg/time/#ParseDuration
 	What     string        `json:"taskID"`
 }
 
