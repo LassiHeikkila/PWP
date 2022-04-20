@@ -121,7 +121,7 @@ func (e *executor) schedulePeriodicTask(task types.PeriodicTask) error {
 		name:  task.What,
 		index: getTaskInstance(e.scheduleConfig.periodicConfig, task.What),
 	}
-	e.scheduleConfig.periodicConfig[ti] = task.Interval
+	e.scheduleConfig.periodicConfig[ti] = time.Duration(task.Interval.Duration)
 	return nil
 }
 
