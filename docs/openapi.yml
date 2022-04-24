@@ -15,6 +15,7 @@ info:
 
 servers:
 - url: http://localhost:8081/api/v1
+- url: https://taskey-service.herokuapp.com/api/v1
 
 security:
   - bearerAuth: []
@@ -559,6 +560,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Task'
+            examples:
+              Cmd:
+                $ref: '#/components/examples/CmdTask'
+              Script:
+                $ref: '#/components/examples/ScriptTask'
       responses:
         200:
           $ref: '#/components/responses/Success'
@@ -1059,6 +1065,37 @@ components:
         msg: "ok"
         payload:
           token: "this would be a JWT"
+    CmdTask:
+      summary: Task definition of type 'cmd'
+      value:
+        name: "task123"
+        description: "example of a command task"
+        content:
+          type: "cmd"
+          combinedOutput: false
+          program: "/usr/bin/curl"
+          args:
+            - "https://taskey-service.herokuapp.com/api/v1/health/"
+    ScriptTask:
+      summary: Task definition of type 'script'
+      value:
+        name: "task456"
+        description: "example of a script task"
+        content:
+          type: "script"
+          combinedOutput: false
+          interpreter: "bash"
+          script: |
+            #!/bin/bash
+
+            if [ "$(curl https://taskey-service.herokuapp.com/api/v1/health/ | jq .ok)" = "true" ]
+            then
+              echo "service alive"
+              exit 0
+            else
+              echo "service not alive"
+              exit 1
+            fi
   schemas:
     ApiResponse:
       type: object
@@ -1137,10 +1174,40 @@ components:
         description:
           type: string
         content:
-          type: object
+          oneOf:
+          - $ref: '#/components/schemas/CmdTaskContent'
+          - $ref: '#/components/schemas/ScriptTaskContent'
       required:
         - name
         - content
+    CmdTaskContent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - cmd
+        combinedOutput:
+          type: boolean
+        program:
+          type: string
+        args:
+          type: array
+          items:
+            type: string
+    ScriptTaskContent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - script
+        combinedOutput:
+          type: boolean
+        interpreter:
+          type: string
+        script:
+          type: string
     Schedule:
       type: object
       properties:
