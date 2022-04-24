@@ -20,3 +20,8 @@ You may also build a Docker image using `docker image build -t taskey .` and run
 
 # Running tests
 If you have Go installed locally, you can simply run `go test -v ./...` at the root of the repository to execute all tests.
+
+# Deployment
+Service is deployed with [Heroku](https://taskey-service.herokuapp.com).
+
+You can view the API documentation at [/api/v1/](https://taskey-service.herokuapp.com/api/v1/).
