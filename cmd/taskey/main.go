@@ -178,6 +178,7 @@ func run(ctx context.Context) int {
 		"Access-Control-Request-Method",
 	})
 	originsOK := handlers.AllowedOrigins(parseAllowedOrigins(allowedCORSOrigins))
+	methodsOK := handlers.AllowedMethods([]string{http.MethodPost, http.MethodGet, http.MethodPut, http.MethodDelete})
 
 	srv := &http.Server{
 		Handler: handlers.CombinedLoggingHandler(
@@ -185,6 +186,7 @@ func run(ctx context.Context) int {
 				handlers.CORS(
 					originsOK,
 					headersOK,
+					methodsOK,
 				)(h))),
 		Addr:         fmt.Sprintf(":%d", httpPort),
 		WriteTimeout: 15 * time.Second,
