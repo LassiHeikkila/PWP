@@ -141,6 +141,7 @@ func (e *executor) Start(ctx context.Context) error {
 			t, defined := e.tasks[k.name]
 			if !defined {
 				// TODO: log something?
+				// TODO: continue instead of return to keep trying?
 				return
 			}
 			t()
@@ -160,6 +161,7 @@ func (e *executor) Start(ctx context.Context) error {
 				t, defined := e.tasks[k.name]
 				if !defined {
 					// TODO: log something?
+					// TODO: continue instead of return to keep trying?
 					return
 				}
 				t()
