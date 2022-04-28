@@ -21,12 +21,16 @@ func executeSchedule(ctx context.Context, sched *types.Schedule, tasks map[strin
 	}
 
 	if err := executor.SetSchedule(*sched); err != nil {
-		// TODO: log something?
+		return err
 	}
 
+	execCb := taskExecCallback(func(name string, status int, output string) {
+
+	})
+
 	for name, task := range tasks {
-		if err := executor.ConfigureTask(name, makeTask(task)); err != nil {
-			// TODO: log something?
+		if err := executor.ConfigureTask(name, makeTask(task, execCb)); err != nil {
+			return err
 		}
 	}
 
