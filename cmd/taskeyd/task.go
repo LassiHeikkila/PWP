@@ -83,9 +83,9 @@ func execCmd(cmd *exec.Cmd, combinedOutput bool, status *int, output *string) er
 		return nil
 	}
 
-	switch err.(type) {
+	switch err := err.(type) {
 	case *exec.ExitError:
-		*status = err.(*exec.ExitError).ExitCode()
+		*status = err.ExitCode()
 		return nil
 	default:
 	}
