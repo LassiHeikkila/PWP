@@ -150,7 +150,7 @@ func (e *executor) Start(ctx context.Context) error {
 	}
 
 	for k, v := range e.scheduleConfig.singleshotConfig {
-		d := v.Sub(time.Now())
+		d := time.Until(v)
 		t := time.NewTimer(d)
 		e.singleshotTimers[k] = t
 		go func() {
