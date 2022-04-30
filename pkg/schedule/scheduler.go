@@ -148,6 +148,7 @@ func (e *executor) Start(ctx context.Context) error {
 		})
 		e.cronExecutor.Schedule(v, job)
 	}
+	e.cronExecutor.Start()
 
 	for k, v := range e.scheduleConfig.singleshotConfig {
 		d := time.Until(v)

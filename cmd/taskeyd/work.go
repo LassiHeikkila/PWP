@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"log"
+	"time"
 
 	"github.com/LassiHeikkila/taskey/pkg/schedule"
 	"github.com/LassiHeikkila/taskey/pkg/types"
@@ -25,7 +27,14 @@ func executeSchedule(ctx context.Context, sched *types.Schedule, tasks map[strin
 	}
 
 	execCb := taskExecCallback(func(name string, status int, output string) {
-
+		log.Println("executed task", name, "with status", status, "and output:\n", output)
+		rec := types.Record{
+			TaskName:   name,
+			ExecutedAt: time.Now(),
+			Status:     status,
+			Output:     output,
+		}
+		postResult(token, url, &rec)
 	})
 
 	for name, task := range tasks {
@@ -36,9 +45,11 @@ func executeSchedule(ctx context.Context, sched *types.Schedule, tasks map[strin
 
 	err = executor.Start(ctx)
 	defer executor.Stop()
+
 	if err != nil {
 		return err
 	}
+
 	<-ctx.Done()
 
 	return nil

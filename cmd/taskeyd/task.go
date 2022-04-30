@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os/exec"
 
@@ -17,7 +16,9 @@ func makeTask(task *types.Task, cb taskExecCallback) func() {
 	case *types.ScriptTask:
 		return makeScriptTask(task, cb)
 	default:
-		return nil
+		return func() {
+			log.Println("unknown task type")
+		}
 	}
 }
 
@@ -41,11 +42,12 @@ func makeCmdTask(task *types.Task, cb taskExecCallback) func() {
 func makeScriptTask(task *types.Task, cb taskExecCallback) func() {
 	return func() {
 		scriptTask := task.Content.(*types.ScriptTask)
-		f, _ := ioutil.TempFile("", "taskey-script") // TODO: check error
-		_, _ = f.WriteString(scriptTask.Script)      // TODO: check error
-		_ = f.Close()                                // TODO: check error
 
-		cmd := exec.Command(scriptTask.Interpreter, f.Name())
+		// TODO: check errors
+		cmd := exec.Command(scriptTask.Interpreter)
+		in, _ := cmd.StdinPipe()
+		_, _ = in.Write([]byte(scriptTask.Script))
+		_ = in.Close()
 
 		var status int
 		var output string
