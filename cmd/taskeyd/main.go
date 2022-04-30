@@ -10,7 +10,8 @@ import (
 
 var (
 	token = ""
-	url   = ""
+	url   = "https://taskey-service.herokuapp.com"
+	org   = "testorg"
 )
 
 func main() {
@@ -18,20 +19,23 @@ func main() {
 	signal.Notify(sc, os.Interrupt)
 
 	log.Println("fetching schedule")
-	schedule, err := fetchSchedule(token, url)
+	schedule, err := fetchSchedule(token, url, org)
 	if err != nil {
 		fmt.Println("error fetching schedule:", err)
 		return
 	}
-	log.Println("initial schedule fetched")
+	log.Printf("initial schedule fetched: %#v\n", *schedule)
 
 	log.Println("fetching tasks")
-	tasks, err := fetchTasks(token, url)
+	tasks, err := fetchTasks(token, url, org)
 	if err != nil {
 		fmt.Println("error fetching tasks:", err)
 		return
 	}
 	log.Println("tasks fetched")
+	for name, task := range tasks {
+		log.Printf("task %s: %#v content: %#v\n", name, *task, task.Content)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	stdjson "encoding/json"
 	"errors"
+	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/LassiHeikkila/taskey/pkg/json"
@@ -87,20 +91,239 @@ var (
 	}
 )
 
-func fetchSchedule(token string, url string) (*types.Schedule, error) {
-	return dummySchedule, nil
-	// return nil, errors.New("unimplemented")
+func setAuthorizationHeader(req *http.Request, token string) {
+	req.Header.Set("Authorization", fmt.Sprintf("Key %s", token))
 }
 
-func fetchTasks(token string, url string) (map[string]*types.Task, error) {
-	return dummyTasks, nil
-	// return nil, errors.New("unimplemented")
+func doGetRequest(req *http.Request, v any) error {
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	dec := stdjson.NewDecoder(resp.Body)
+
+	err = dec.Decode(v)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func postResult(token string, url string, record *types.Record) error {
+func fetchSchedule(token string, url string, org string) (*types.Schedule, error) {
+	if token == "" && url == "" {
+		return dummySchedule, nil
+	}
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf(
+			"%s/api/v1/%s/machines/self/schedule/",
+			url, org,
+		),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+	setAuthorizationHeader(req, token)
+
+	type scheduleResponse struct {
+		Code    int             `json:"code"`
+		Message string          `json:"msg"`
+		Payload *types.Schedule `json:"payload"`
+	}
+
+	var resp scheduleResponse
+
+	err = doGetRequest(req, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != http.StatusOK {
+		return nil, errors.New("no schedule found")
+	}
+
+	return resp.Payload, nil
+}
+
+func fetchTasks(token string, url string, org string) (map[string]*types.Task, error) {
+	if token == "" && url == "" {
+		return dummyTasks, nil
+	}
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf(
+			"%s/api/v1/%s/machines/self/tasks/",
+			url, org,
+		),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+	setAuthorizationHeader(req, token)
+
+	type tasksResponse struct {
+		Code    int                      `json:"code"`
+		Message string                   `json:"msg"`
+		Payload []map[string]interface{} `json:"payload"`
+	}
+
+	var resp tasksResponse
+
+	err = doGetRequest(req, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Code != http.StatusOK {
+		return nil, errors.New("no tasks found")
+	}
+
+	m := make(map[string]*types.Task, len(resp.Payload))
+	for _, t := range resp.Payload {
+		task := unmarshalTask(t)
+		m[task.Name] = task
+	}
+
+	return m, nil
+}
+
+func getValue[V any](m map[string]interface{}, key string) V {
+	val, ok := m[key]
+	if !ok {
+		var zero V
+		return zero
+	}
+	v, ok := val.(V)
+	if !ok {
+		var zero V
+		return zero
+	}
+	return v
+}
+
+func getSlice[V any](m map[string]interface{}, key string) []V {
+	val, ok := m[key]
+	if !ok {
+		var zero []V
+		return zero
+	}
+	v, ok := val.([]interface{})
+	if !ok {
+		var zero []V
+		return zero
+	}
+
+	r := make([]V, 0, len(v))
+	for _, item := range v {
+		r = append(r, item.(V))
+	}
+
+	return r
+}
+
+func unmarshalTask(v map[string]interface{}) *types.Task {
+	log.Println(v)
+	// TODO: fix unsafe unmarshalling
+	name := getValue[string](v, "name")
+	description := getValue[string](v, "description")
+
+	c := getValue[map[string]interface{}](v, "content")
+
+	tp := getValue[string](c, "type")
+	combo := getValue[bool](c, "combinedOutput")
+
+	var content any
+	switch tp {
+	case types.TaskTypeCmd:
+		program := getValue[string](c, "program")
+		args := getSlice[string](c, "args")
+		content = &types.CmdTask{
+			TaskProperties: types.TaskProperties{
+				Type:           tp,
+				CombinedOutput: combo,
+			},
+			Program: program,
+			Args:    args,
+		}
+	case types.TaskTypeScript:
+		interpreter := getValue[string](c, "interpreter")
+		scriptBody := getValue[string](c, "script")
+		content = &types.ScriptTask{
+			TaskProperties: types.TaskProperties{
+				Type:           tp,
+				CombinedOutput: combo,
+			},
+			Interpreter: interpreter,
+			Script:      scriptBody,
+		}
+	}
+
+	return &types.Task{
+		Name:        name,
+		Description: description,
+		Content:     content,
+	}
+}
+
+func postResult(token string, url string, org string, record *types.Record) error {
 	if record == nil {
 		return errors.New("nil record")
 	}
-	log.Println("posting record:", *record)
-	return errors.New("unimplemented")
+
+	if token == "" && url == "" {
+		log.Println("posting record:", *record)
+		return nil
+	}
+
+	body := bytes.Buffer{}
+	enc := stdjson.NewEncoder(&body)
+
+	err := enc.Encode(record)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf(
+			"%s/api/v1/%s/machines/self/records/",
+			url, org,
+		),
+		&body,
+	)
+	if err != nil {
+		return err
+	}
+	setAuthorizationHeader(req, token)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	type response struct {
+		Code    int    `json:"code"`
+		Message string `json:"msg"`
+	}
+
+	dec := stdjson.NewDecoder(resp.Body)
+	var v response
+	err = dec.Decode(&v)
+	if err != nil {
+		return err
+	}
+
+	if v.Code != http.StatusOK {
+		return fmt.Errorf("non-ok response: %d", v.Code)
+	}
+
+	return nil
 }

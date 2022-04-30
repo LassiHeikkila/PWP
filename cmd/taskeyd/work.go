@@ -34,7 +34,9 @@ func executeSchedule(ctx context.Context, sched *types.Schedule, tasks map[strin
 			Status:     status,
 			Output:     output,
 		}
-		postResult(token, url, &rec)
+		if err := postResult(token, url, org, &rec); err != nil {
+			log.Println("error posting result:", err)
+		}
 	})
 
 	for name, task := range tasks {
