@@ -358,7 +358,7 @@ func (c *controller) ReadRecords(machineName string) ([]Record, error) {
 	}
 
 	var records []Record
-	res := c.db.Where(`machine_id = ?`, machine.ID).Find(&records)
+	res := c.db.Preload("Task").Preload("Machine").Where(`machine_id = ?`, machine.ID).Find(&records)
 	err = res.Error
 	if err != nil {
 		return nil, err
