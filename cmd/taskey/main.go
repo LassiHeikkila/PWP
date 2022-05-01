@@ -146,6 +146,10 @@ func run(ctx context.Context) int {
 		log.Println("failed to register task routes!")
 		return 1
 	}
+	if err := h.RegisterRecordHandlers(); err != nil {
+		log.Println("failed to register record routes!")
+		return 1
+	}
 	if err := h.RegisterAuthenticationHandlers(); err != nil {
 		log.Println("failed to register authentication routes!")
 		return 1
