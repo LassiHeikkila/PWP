@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -15,6 +16,7 @@ var (
 )
 
 func main() {
+	log.SetFlags(log.Ldate | log.LUTC | log.Lshortfile | log.Lmicroseconds)
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, os.Interrupt)
 
@@ -24,17 +26,12 @@ func main() {
 		fmt.Println("error fetching schedule:", err)
 		return
 	}
-	log.Printf("initial schedule fetched: %#v\n", *schedule)
 
 	log.Println("fetching tasks")
 	tasks, err := fetchTasks(token, url, org)
 	if err != nil {
 		fmt.Println("error fetching tasks:", err)
 		return
-	}
-	log.Println("tasks fetched")
-	for name, task := range tasks {
-		log.Printf("task %s: %#v content: %#v\n", name, *task, task.Content)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -44,7 +41,16 @@ func main() {
 		cancel()
 	}()
 
-	log.Println("executing schedule")
+	log.Println("executing schedule:")
+	sb, _ := json.MarshalIndent(schedule, "", "  ")
+	_, _ = log.Writer().Write(sb)
+	_, _ = log.Writer().Write([]byte("\n"))
+
+	log.Println("defined tasks:")
+	tb, _ := json.MarshalIndent(tasks, "", "  ")
+	_, _ = log.Writer().Write(tb)
+	_, _ = log.Writer().Write([]byte("\n"))
+
 	err = executeSchedule(ctx, schedule, tasks)
 	log.Println("executor stopped with error:", err)
 }

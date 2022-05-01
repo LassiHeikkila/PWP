@@ -152,6 +152,11 @@ func (e *executor) Start(ctx context.Context) error {
 
 	for k, v := range e.scheduleConfig.singleshotConfig {
 		d := time.Until(v)
+		if d < 0 {
+			// we don't want expired singleshot tasks to run
+			// TODO: automatically remove singleshot tasks from schedule when they are executed and/or have expired
+			continue
+		}
 		t := time.NewTimer(d)
 		e.singleshotTimers[k] = t
 		go func() {

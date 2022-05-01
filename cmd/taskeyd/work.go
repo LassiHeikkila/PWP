@@ -27,7 +27,7 @@ func executeSchedule(ctx context.Context, sched *types.Schedule, tasks map[strin
 	}
 
 	execCb := taskExecCallback(func(name string, status int, output string) {
-		log.Println("executed task", name, "with status", status, "and output:\n", output)
+		log.Println("executed task", name, "with status", status) //, "and output:\n", output)
 		rec := types.Record{
 			TaskName:   name,
 			ExecutedAt: time.Now(),

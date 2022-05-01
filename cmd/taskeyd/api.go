@@ -229,7 +229,6 @@ func getSlice[V any](m map[string]interface{}, key string) []V {
 }
 
 func unmarshalTask(v map[string]interface{}) *types.Task {
-	log.Println(v)
 	// TODO: fix unsafe unmarshalling
 	name := getValue[string](v, "name")
 	description := getValue[string](v, "description")
