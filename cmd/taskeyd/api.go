@@ -326,3 +326,40 @@ func postResult(token string, url string, org string, record *types.Record) erro
 
 	return nil
 }
+
+func checkToken(token string, url string, org string) error {
+	if token == "" || url == "" || org == "" {
+		return errors.New("token, organization or url not defined")
+	}
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf(
+			"%s/api/v1/%s/machines/self/auth/",
+			url, org,
+		),
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	setAuthorizationHeader(req, token)
+
+	type response struct {
+		Code    int    `json:"code"`
+		Message string `json:"msg"`
+	}
+
+	var resp response
+
+	err = doGetRequest(req, &resp)
+	if err != nil {
+		return err
+	}
+
+	if resp.Code != http.StatusOK {
+		return fmt.Errorf("token check returned: %d", resp.Code)
+	}
+
+	return nil
+}

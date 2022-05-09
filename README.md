@@ -25,3 +25,10 @@ If you have Go installed locally, you can simply run `go test -v ./...` at the r
 Service is deployed with [Heroku](https://taskey-service.herokuapp.com).
 
 You can view the API documentation at [/api/v1/](https://taskey-service.herokuapp.com/api/v1/).
+
+# taskeyd
+`taskeyd` is the daemon that will run on a machine intended for executing tasks. It is a small program that downloads the defined schedule and tasks from the server, executes them based on the schedule and uploads results back to the server.
+
+Below is a small demo of how it looks in action:
+
+[![asciicast](https://asciinema.org/a/MrTAIV70UIcXkbyHj9qJhI193.svg)](https://asciinema.org/a/MrTAIV70UIcXkbyHj9qJhI193)
