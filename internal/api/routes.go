@@ -96,7 +96,7 @@ func (h *handler) setAuthRoutesV1() {
 	// check if JWT is OK
 	h.router.HandleFunc("/api/v1/auth/", h.loginChecker).Methods(http.MethodGet)
 	// check if machine token is OK
-	h.router.HandleFunc("/api/v1/{organization_id}/machines/self/auth/", h.requiresMachine(h.checkMachineToken)).Methods(http.MethodGet)
+	h.router.Handle("/api/v1/{organization_id}/machines/self/auth/", h.requiresMachine(h.checkMachineToken)).Methods(http.MethodGet)
 	// change password
 	h.router.HandleFunc("/api/v1/auth/{username}/changepassword/", h.passwordChangeHandler).Methods(http.MethodPost)
 }
