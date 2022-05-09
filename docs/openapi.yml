@@ -525,6 +525,21 @@ paths:
             $ref: '#/components/responses/NotFound'
           501:
             $ref: '#/components/responses/Unimplemented'
+  /{organization_id}/machines/self/auth/:
+      get:
+        tags:
+          - machine access
+        summary: Endpoint for a machine to check token validity
+        operationId: checkMachineToken
+        parameters:
+        - $ref: '#/components/parameters/organizationId'
+        security:
+        - accessToken: []
+        responses:
+          200:
+            $ref: '#/components/responses/Success'
+          401:
+            $ref: '#/components/responses/Unauthenticated'
   /{organization_id}/tasks/:
     get:
       tags:

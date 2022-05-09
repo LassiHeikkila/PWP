@@ -10,6 +10,13 @@ import (
 	"github.com/LassiHeikkila/taskey/pkg/types"
 )
 
+func (h *handler) checkMachineToken(w http.ResponseWriter, req *http.Request, self *types.Machine) {
+	defer req.Body.Close()
+
+	// if the request got this far, it means the authentication check middleware passed
+	_ = encodeSuccess(w)
+}
+
 func (h *handler) readMachineOwnSchedule(w http.ResponseWriter, req *http.Request, self *types.Machine) {
 	defer req.Body.Close()
 
